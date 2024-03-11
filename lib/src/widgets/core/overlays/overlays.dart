@@ -52,13 +52,7 @@ class _VideoOverlays extends StatelessWidget {
           return AnimatedOpacity(
             duration: const Duration(milliseconds: 200),
             opacity: podCtr.isOverlayVisible ? 1 : 0,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (!kIsWeb) _MobileOverlay(tag: tag),
-                if (kIsWeb) _WebOverlay(tag: tag),
-              ],
-            ),
+            child:!kIsWeb?_MobileOverlay(tag: tag):_WebOverlay(tag: tag),
           );
         },
       );

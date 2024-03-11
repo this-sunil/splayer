@@ -1,6 +1,7 @@
 part of 'package:splayer/src/splayer.dart';
 
-class _PodCoreVideoPlayer extends StatelessWidget {
+
+class _PodCoreVideoPlayer extends StatefulWidget {
   final VideoPlayerController videoPlayerCtr;
   final double videoAspectRatio;
   final String tag;
@@ -11,11 +12,62 @@ class _PodCoreVideoPlayer extends StatelessWidget {
     required this.tag,
   });
 
+
+  @override
+  State<_PodCoreVideoPlayer> createState() => _PodCoreVideoPlayerState();
+}
+
+class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
+  VideoPlayerController get videoPlayerCtr=>widget.videoPlayerCtr;
+  double get videoAspectRatio=>widget.videoAspectRatio;
+  String get tag=>widget.tag;
+  double _brightness = 1.0;
+  double _volume = 1.0;
+  void setBrightness(double value) {
+    // Implement logic to adjust brightness on your platform (Android/iOS)
+    ScreenBrightness().setScreenBrightness(value);
+    print('Brightness set to $value');
+  }
+
+  void setVolume(double value) {
+    // Implement logic to adjust volume on your platform (Android/iOS)
+
+    print('Volume set to $value');
+  }
+  void _handleHorizontalDrag(DragUpdateDetails details) {
+    final mediaQuery = MediaQuery.of(context);
+    final dragWidth = mediaQuery.size.width;
+    final dragPos = details.localPosition.dx;
+
+    // Adjust brightness (left side of the screen)
+    if (dragPos < dragWidth / 3) {
+      _brightness += details.delta.dx / dragWidth;
+      _brightness = _brightness.clamp(0.0, 1.0);
+      setBrightness(_brightness);
+    }
+
+    // Adjust volume (right side of the screen)
+    if (dragPos > 2 * dragWidth / 3) {
+      _volume += details.delta.dx / dragWidth;
+      _volume = _volume.clamp(0.0, 1.0);
+      setVolume(_volume);
+    }
+  }
+  double calculateAspectRatio(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return width > height ? width / height : height / width;
+  }
+
   @override
   Widget build(BuildContext context) {
+
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
     return Builder(
       builder: (ctrx) {
+
         return RawKeyboardListener(
           autofocus: true,
           focusNode:
@@ -26,12 +78,41 @@ class _PodCoreVideoPlayer extends StatelessWidget {
             appContext: ctrx,
             tag: tag,
           ),
-          child: Stack(
+         child: Flexi(
+
+
+             controller: FlexiController(
+               customControls: Stack(
+                 children: [
+                    const CupertinoControls(backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(onPressed: (){
+                        showModalBottomSheet<void>(
+                          context: context,
+                          builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
+                        );
+                      }, icon: const Icon(BootstrapIcons.gear,color: Colors.white)),
+                    )
+                 ],
+               ),
+
+           aspectRatio: 16/9,
+             isBrignessOptionDisplay: true,
+             isVolumnOptionDisplay: true,
+
+             hideControlsTimer: const Duration(seconds: 5),
+             videoPlayerController: videoPlayerCtr)),
+         /* child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+
+            *//*  onHorizontalDragUpdate: _handleHorizontalDrag,*//*
+              child:Stack(
             fit: StackFit.expand,
             children: [
 
 
-               InteractiveViewer(
+              InteractiveViewer(
                   scaleEnabled: true,
                   maxScale: 100.0,
                   child:FittedBox(
@@ -42,6 +123,7 @@ class _PodCoreVideoPlayer extends StatelessWidget {
                         child: VideoPlayer(videoPlayerCtr),
                       ))
               ),
+
 
 
 
@@ -156,8 +238,9 @@ class _PodCoreVideoPlayer extends StatelessWidget {
                     ),
                   ),
                 ),
+
             ],
-          ),
+          )),*/
         );
       },
     );

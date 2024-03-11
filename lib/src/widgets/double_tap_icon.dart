@@ -107,8 +107,8 @@ class _DoubleTapIconState extends State<DoubleTapIcon>
         animation: _animationController,
         builder: (context, child) {
           const icon = Icon(
-            Icons.play_arrow_sharp,
-            size: 32,
+            Icons.keyboard_arrow_right,
+            size: 20,
             color: Colors.white,
           );
           return Center(
@@ -125,7 +125,7 @@ class _DoubleTapIconState extends State<DoubleTapIcon>
                         child: icon,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20),
+                        padding: const EdgeInsets.only(left: 10),
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 300),
                           opacity: opacityCtr.value,
@@ -133,7 +133,7 @@ class _DoubleTapIconState extends State<DoubleTapIcon>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 40),
+                        padding: const EdgeInsets.only(left: 10),
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 600),
                           opacity: opacityCtr.value,

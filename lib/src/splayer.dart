@@ -1,12 +1,20 @@
 import 'dart:async';
 
+
+
+import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:screen_brightness/screen_brightness.dart';
+import 'package:splayer/src/Flexi/cupertino/cupertino_controls.dart';
+import 'package:splayer/src/Flexi/helpers/adaptive_controls.dart';
 import 'package:universal_html/html.dart' as uni_html;
 
 import '../splayer.dart';
+import 'Flexi/flexi_player.dart';
+import 'Flexi/models/index.dart';
 import 'controllers/pod_getx_video_controller.dart';
 import 'utils/logger.dart';
 import 'widgets/double_tap_icon.dart';

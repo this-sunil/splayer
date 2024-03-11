@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import '../../splayer.dart';
 
 class PlayVideoFrom {

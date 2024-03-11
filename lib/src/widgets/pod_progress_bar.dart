@@ -60,6 +60,7 @@ class _PodProgressBarState extends State<PodProgressBar> {
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
               child: _progressBar(size),
+
               onHorizontalDragStart: (DragStartDetails details) {
                 if (!videoPlayerValue!.isInitialized) {
                   return;
@@ -82,6 +83,9 @@ class _PodProgressBarState extends State<PodProgressBar> {
                 seekToRelativePosition(details.globalPosition);
 
                 widget.onDragUpdate?.call();
+              },
+              onVerticalDragStart: (d){
+                print(""+d.toString());
               },
               onHorizontalDragEnd: (DragEndDetails details) {
                 if (_controllerWasPlaying) {

@@ -73,7 +73,7 @@ class _MobileOverlay extends StatelessWidget {
                  }
                },
                child: const Icon(
-                 Icons.more_vert_rounded,
+                 BootstrapIcons.gear,
                ),
              )),
             ],

@@ -58,8 +58,10 @@ class _AnimatedPlayPauseIconState extends State<_AnimatedPlayPauseIcon>
         return GetBuilder<PodGetXVideoController>(
           tag: widget.tag,
           id: 'podVideoState',
-          builder: (f) => MaterialIconButton(
-            toolTipMesg: f.isvideoPlaying
+          builder: (f) => FloatingActionButton(
+            backgroundColor: Colors.red,
+            shape: const CircleBorder(),
+            tooltip: f.isvideoPlaying
                 ? podCtr.podPlayerLabels.pause ??
                     'Pause${kIsWeb ? ' (space)' : ''}'
                 : podCtr.podPlayerLabels.play ??
@@ -87,7 +89,7 @@ class _AnimatedPlayPauseIconState extends State<_AnimatedPlayPauseIcon>
       icon: AnimatedIcons.play_pause,
       progress: _payCtr,
       color: Colors.white,
-      size: widget.size,
+      size: 30,
     );
   }
 }
