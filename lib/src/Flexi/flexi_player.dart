@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:splayer/splayer.dart';
 import 'package:splayer/src/Flexi/flexi_progress_colors.dart';
 import 'package:splayer/src/Flexi/models/option_item.dart';
@@ -129,9 +130,12 @@ class FlexiState extends State<Flexi> {
   ) {
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
-      child: ChangeNotifierProvider<PlayerNotifier>.value(
-        value: notifier,
-        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+      child: FadeTransition(
+        opacity: animation,
+       child: ChangeNotifierProvider<PlayerNotifier>.value(
+         value: notifier,
+         builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+       ),
       ),
     );
 
@@ -152,7 +156,7 @@ class FlexiState extends State<Flexi> {
   }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
-    final TransitionRoute<void> route = PageRouteBuilder<void>(
+    final TransitionRoute<dynamic> route = PageRouteBuilder<dynamic>(
       fullscreenDialog: true,
       opaque: false,
       reverseTransitionDuration: const Duration(milliseconds: 400),
@@ -190,7 +194,7 @@ class FlexiState extends State<Flexi> {
     final videoHeight =
         widget.controller.videoPlayerController.value.size.height;
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: []);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.bottom]);
 
     // if (widget.controller.systemOverlaysOnEnterFullScreen != null) {
     //   /// Optional user preferred settings
