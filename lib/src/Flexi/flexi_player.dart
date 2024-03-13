@@ -153,6 +153,9 @@ class FlexiState extends State<Flexi> {
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
     final TransitionRoute<void> route = PageRouteBuilder<void>(
+      fullscreenDialog: true,
+      opaque: false,
+      reverseTransitionDuration: const Duration(milliseconds: 400),
       pageBuilder: _fullScreenRoutePageBuilder,
     );
 
@@ -182,12 +185,12 @@ class FlexiState extends State<Flexi> {
     );
   }
 
-  void onEnterFullScreen() {
+  void onEnterFullScreen() async{
     final videoWidth = widget.controller.videoPlayerController.value.size.width;
     final videoHeight =
         widget.controller.videoPlayerController.value.size.height;
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: []);
 
     // if (widget.controller.systemOverlaysOnEnterFullScreen != null) {
     //   /// Optional user preferred settings

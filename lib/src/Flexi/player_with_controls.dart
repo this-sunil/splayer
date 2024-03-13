@@ -38,6 +38,7 @@ class PlayerWithControls extends StatelessWidget {
         children: <Widget>[
           if (flexiController.placeholder != null)
             flexiController.placeholder!,
+
           InteractiveViewer(
             transformationController: flexiController.transformationController,
             maxScale: flexiController.maxScale,
