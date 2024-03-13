@@ -66,7 +66,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   bool _subtitleOn = false;
   Timer? _bufferingDisplayTimer;
   bool _displayBufferingIndicator = false;
-
+  bool isMuted=false;
   late VideoPlayerController controller;
 
   Duration varDuration = Duration(milliseconds: 500);
@@ -138,6 +138,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
             .map(
               (e) => ListTile(
             title: Text('${e.quality}p'),
+            trailing: Icon(Icons.check,color: podCtr.vimeoPlayingVideoQuality==e.quality?Colors.black:Colors.transparent),
             onTap: () {
              onTap != null ? onTap() : Navigator.of(context).pop();
 
@@ -167,7 +168,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
             title: Text(e),
             onTap: () {
               onTap != null ? onTap() : Navigator.of(context).pop();
+
               podCtr.setVideoPlayBack(e);
+
 
             },
           ),
@@ -224,22 +227,28 @@ class _CupertinoControlsState extends State<CupertinoControls>
               _bottomSheetTiles(
                 title: podCtr.podPlayerLabels.playbackSpeed,
                 icon: Icons.slow_motion_video_rounded,
-                subText: podCtr.currentPaybackSpeed,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  Timer(const Duration(milliseconds: 100), () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => SafeArea(
-                        child: _VideoPlaybackSelectorMob(
+                subText: latestValue!.playbackSpeed.toString(),
+                onTap: () async {
+                  Navigator.pop(context);
+                  _hideTimer?.cancel();
 
-                          onTap: null,
-                          tag: tag,
-                        ),
-                      ),
-                    );
-                  });
+                  final chosenSpeed = await showCupertinoModalPopup<double>(
+                    context: context,
+                    semanticsDismissible: true,
+                    useRootNavigator: flexiController.useRootNavigator,
+                    builder: (context) => _PlaybackSpeedDialog(
+                      speeds: flexiController.playbackSpeeds,
+                      selected: _latestValue.playbackSpeed,
+                    ),
+                  );
+
+                  if (chosenSpeed != null) {
+                    controller.setPlaybackSpeed(chosenSpeed);
+                  }
+
+                  if (_latestValue.isPlaying) {
+                    _startHideTimer();
+                  }
                 },
               ),
             ],
@@ -334,7 +343,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final backgroundColor = widget.backgroundColor;
     final iconColor = widget.iconColor;
     final orientation = MediaQuery.of(context).orientation;
-    final barHeight = orientation == Orientation.portrait ? 30.0 : 47.0;
+    final barHeight = orientation == Orientation.portrait ? 50.0 : 50.0;
     final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
 
     return MouseRegion(
@@ -1271,6 +1280,20 @@ class _CupertinoControlsState extends State<CupertinoControls>
             /*_buildOptionsButton(iconColor, barHeight),*/
           Align(
             alignment: Alignment.topRight,
+            child: IconButton(onPressed: (){
+              if(isMuted){
+                controller.setVolume(0.0);
+              }
+              else{
+                controller.setVolume(1.0);
+              }
+              setState(() {
+                isMuted=!isMuted;
+              });
+            },icon: Icon(isMuted?BootstrapIcons.volume_up:BootstrapIcons.volume_down,color: iconColor)),
+          ),
+          Align(
+            alignment: Alignment.topRight,
             child: settingWidget(widget.tag,flexiController),
           )
           //mute button - old position
@@ -1347,6 +1370,12 @@ class _CupertinoControlsState extends State<CupertinoControls>
               _dragging = false;
             });
 
+            _startHideTimer();
+          },
+          onDragUpdate: (){
+            setState(() {
+              _dragging=true;
+            });
             _startHideTimer();
           },
           colors: flexiController.cupertinoProgressColors ??

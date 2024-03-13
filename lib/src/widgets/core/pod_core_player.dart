@@ -54,6 +54,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
       setVolume(_volume);
     }
   }
+  TransformationController transformationController = TransformationController();
   double calculateAspectRatio(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
@@ -67,6 +68,11 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
     controller=FlexiController(
         autoPlay: true,
         autoInitialize: true,
+        transformationController: transformationController,
+        zoomAndPan: true,
+        maxScale: 100,
+
+
         showControlsOnInitialize: true,
         customControls: Stack(
           children: [
