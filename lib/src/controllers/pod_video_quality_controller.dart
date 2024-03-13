@@ -129,14 +129,17 @@ class _PodVideoQualityController extends _PodVideoController {
       playingVideoUrl = _videoQualityUrl;
       _videoCtr = VideoPlayerController.networkUrl(Uri.parse(_videoQualityUrl));
       await _videoCtr?.initialize();
+      print("=====Initalize the controller==== ");
       _videoDuration = _videoCtr?.value.duration ?? Duration.zero;
       _videoCtr?.addListener(videoListner);
+      print("====Listen the controller=====");
       await _videoCtr?.seekTo(_videoPosition);
       setVideoPlayBack(_currentPaybackSpeed);
-      podVideoStateChanger(PodVideoState.playing);
+      podVideoStateChanger(PodVideoState.paused);
       onVimeoVideoQualityChanged?.call();
       update();
       update(['update-all']);
+      print("====Update the controller====");
     }
   }
 }

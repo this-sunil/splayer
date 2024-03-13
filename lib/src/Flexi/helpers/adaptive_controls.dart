@@ -1,12 +1,11 @@
-import 'package:splayer/src/Flexi/flexi_player.dart';
 import 'package:flutter/material.dart';
 
 import '../cupertino/cupertino_controls.dart';
 
 class AdaptiveControls extends StatelessWidget {
-
+  final String tag;
   const AdaptiveControls({
-    Key? key,
+    Key? key, required this.tag,
 
   }) : super(key: key);
 
@@ -17,7 +16,7 @@ class AdaptiveControls extends StatelessWidget {
 
       playColor: Colors.red,
         backgroundColor:Color.fromRGBO(41, 41, 41, 0.5),
-        iconColor: Colors.white,//fromARGB(255, 200, 200, 200),
+        iconColor: Colors.white, tag: tag,//fromARGB(255, 200, 200, 200),
       );
     // switch (Theme.of(context).platform) {
     //   case TargetPlatform.android:

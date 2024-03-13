@@ -23,6 +23,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
   String get tag=>widget.tag;
   double _brightness = 1.0;
   double _volume = 1.0;
+  late PlayerNotifier notifier;
   void setBrightness(double value) {
     // Implement logic to adjust brightness on your platform (Android/iOS)
     ScreenBrightness().setScreenBrightness(value);
@@ -60,11 +61,57 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
 
     return width > height ? width / height : height / width;
   }
+  late FlexiController controller;
+  @override
+  void initState() {
+    controller=FlexiController(
+        autoPlay: true,
+        autoInitialize: true,
+        showControlsOnInitialize: true,
+        customControls: Stack(
+          children: [
+            CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
+          /*  Align(
+                       alignment: Alignment.topRight,
+                       child:IconButton(onPressed: (){
+                         showModalBottomSheet<void>(
+                           context: context,
+                           builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
+                         );
+                       }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
+
+                   ),*/
+          ],
+        ),
+        /*additionalOptions: Align(
+               alignment: Alignment.topRight,
+               child:IconButton(onPressed: (){
+                 showModalBottomSheet<void>(
+                   context: context,
+                   builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
+                 );
+               }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
+
+           ),*/
+
+        aspectRatio: 16/9,
+        isBrignessOptionDisplay: true,
+        isVolumnOptionDisplay: true,
+        hideControlsTimer: const Duration(seconds: 3),
+        videoPlayerController: videoPlayerCtr);
+    super.initState();
+  }
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
 
+
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
+    print("PodController =>${podCtr.videoCtr!.value.isPlaying}");
     return Builder(
       builder: (ctrx) {
 
@@ -79,30 +126,8 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
             tag: tag,
           ),
          child: Flexi(
-
-
-             controller: FlexiController(
-               customControls: Stack(
-                 children: [
-                    const CupertinoControls(backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: IconButton(onPressed: (){
-                        showModalBottomSheet<void>(
-                          context: context,
-                          builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
-                        );
-                      }, icon: const Icon(BootstrapIcons.gear,color: Colors.white)),
-                    )
-                 ],
-               ),
-
-           aspectRatio: 16/9,
-             isBrignessOptionDisplay: true,
-             isVolumnOptionDisplay: true,
-
-             hideControlsTimer: const Duration(seconds: 5),
-             videoPlayerController: videoPlayerCtr)),
+           tag: tag,
+             controller:controller),
          /* child: GestureDetector(
             behavior: HitTestBehavior.opaque,
 

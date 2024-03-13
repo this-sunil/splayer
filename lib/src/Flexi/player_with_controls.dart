@@ -1,4 +1,3 @@
-
 import 'package:splayer/src/Flexi/flexi_player.dart';
 import 'package:splayer/src/Flexi/helpers/adaptive_controls.dart';
 import 'package:splayer/src/Flexi/notifiers/index.dart';
@@ -7,23 +6,18 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 
-
 class PlayerWithControls extends StatelessWidget {
-
-  const PlayerWithControls({Key? key}) : super(key: key);
+  final String tag;
+  const PlayerWithControls({Key? key, required this.tag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     final FlexiController flexiController = FlexiController.of(context);
 
-    double calculateAspectRatio(BuildContext context) {
-      final size = MediaQuery.of(context).size;
-      final width = size.width;
-      final height = size.height;
 
-      return width > height ? width / height : height / width;
-    }
+
+
 
     Widget buildControls(
       BuildContext context,
@@ -31,7 +25,7 @@ class PlayerWithControls extends StatelessWidget {
 
     ) {
       return flexiController.showControls
-          ? flexiController.customControls ??  const AdaptiveControls()
+          ? flexiController.customControls ??   AdaptiveControls(tag:tag)
           : const SizedBox();
     }
 

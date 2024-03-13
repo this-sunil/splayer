@@ -3,7 +3,6 @@ part of 'package:splayer/src/splayer.dart';
 
 class _MobileBottomSheet extends StatelessWidget {
   final String tag;
-
   const _MobileBottomSheet({
     required this.tag,
   });
@@ -20,8 +19,9 @@ class _MobileBottomSheet extends StatelessWidget {
               title: podCtr.podPlayerLabels.quality,
               icon: Icons.video_settings_rounded,
               subText: '${podCtr.vimeoPlayingVideoQuality}p',
-              onTap: () {
+              onTap: () async{
                 Navigator.of(context).pop();
+                podCtr.videoCtr!.pause();
                 Timer(const Duration(milliseconds: 100), () {
                   showModalBottomSheet<void>(
                     context: context,
@@ -33,9 +33,8 @@ class _MobileBottomSheet extends StatelessWidget {
                     ),
                   );
                 });
-                // await Future.delayed(
-                //   const Duration(milliseconds: 100),
-                // );
+
+
               },
             ),
           _bottomSheetTiles(

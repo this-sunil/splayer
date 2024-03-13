@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:splayer/splayer.dart';
 import 'package:splayer/src/Flexi/flexi_progress_colors.dart';
 import 'package:splayer/src/Flexi/models/option_item.dart';
 import 'package:splayer/src/Flexi/models/options_translation.dart';
@@ -26,12 +27,12 @@ typedef FlexiRoutePageBuilder = Widget Function(
 class Flexi extends StatefulWidget {
   const Flexi({
     Key? key,
-    required this.controller,
+    required this.controller,required this.tag,
   }) : super(key: key);
 
   /// The [FlexiController]
   final FlexiController controller;
-
+  final String tag;
   @override
   FlexiState createState() {
     return FlexiState();
@@ -87,7 +88,7 @@ class FlexiState extends State<Flexi> {
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) => const PlayerWithControls(),
+        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
       ),
     );
   }
@@ -130,7 +131,7 @@ class FlexiState extends State<Flexi> {
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) => const PlayerWithControls(),
+        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
       ),
     );
 
@@ -312,7 +313,7 @@ class FlexiController extends ChangeNotifier {
     bool? showControlsOnInitialize,
     bool? showOptions,
     Future<void> Function(BuildContext, List<OptionItem>)? optionsBuilder,
-    List<OptionItem> Function(BuildContext)? additionalOptions,
+    Widget? additionalOptions,
     bool? showControls,
     TransformationController? transformationController,
     bool? zoomAndPan,
@@ -419,7 +420,7 @@ class FlexiController extends ChangeNotifier {
   )? optionsBuilder;
 
   /// Add your own additional options on top of flexi options
-  final List<OptionItem> Function(BuildContext context)? additionalOptions;
+  final Widget? additionalOptions;
 
   /// Define here your own Widget on how your n'th subtitle will look like
   Widget Function(BuildContext context, dynamic subtitle)? subtitleBuilder;
