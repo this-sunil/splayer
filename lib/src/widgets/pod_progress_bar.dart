@@ -84,9 +84,7 @@ class _PodProgressBarState extends State<PodProgressBar> {
 
                 widget.onDragUpdate?.call();
               },
-              onVerticalDragStart: (d){
-                print(""+d.toString());
-              },
+
               onHorizontalDragEnd: (DragEndDetails details) {
                 if (_controllerWasPlaying) {
                   podCtr.videoCtr?.play();

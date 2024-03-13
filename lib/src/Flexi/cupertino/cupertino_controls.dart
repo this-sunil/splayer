@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:bootstrap_icons/bootstrap_icons.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:get/get.dart';
 
 import 'package:splayer/src/Flexi/animated_play_pause.dart';
@@ -84,8 +84,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
   bool isPhone = true;
   double varDeviceWidth = 0.0;
 
-  @override
   VideoPlayerValue? get latestValue => _latestValue;
+
   ListTile _bottomSheetTiles({
     required String title,
     required IconData icon,
