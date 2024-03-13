@@ -343,7 +343,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final backgroundColor = widget.backgroundColor;
     final iconColor = widget.iconColor;
     final orientation = MediaQuery.of(context).orientation;
-    final barHeight = orientation == Orientation.portrait ? 50.0 : 50.0;
+    final barHeight = orientation == Orientation.portrait ? 30.0 : 50.0;
     final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
 
     return MouseRegion(
@@ -670,10 +670,13 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
 
-  GestureDetector _buildExpandButton( Color iconColor,
+  IconButton _buildExpandButton( Color iconColor,
       double barHeight,){
-
-    return GestureDetector(
+  return IconButton(onPressed: _onExpandCollapse, icon:  Icon(
+    flexiController.isFullScreen
+    ? Icons.fullscreen_exit_rounded
+    : Icons.fullscreen,color: iconColor));
+  /*  return GestureDetector(
       onTap: _onExpandCollapse,
       child: Container(
         height: barHeight,
@@ -688,7 +691,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
           size: 20,
         ),
       ),
-    );
+    );*/
   }
 
   // GestureDetector _buildExpandButton_old(
@@ -823,6 +826,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
             //(MediaQuery.of(context).orientation) == Orientation.portrait ? 50.0 : 47.0,
            //padding: _flexiController!.isFullScreen  && !isPhone ? EdgeInsets.only(top: 50,bottom: 50) : EdgeInsets.zero,
             child:Column(
+
               children: [
                 Icon(Icons.brightness_6,color: widget.iconColor,size: 18,),
                 Expanded(
@@ -1256,6 +1260,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
         bottom: 5,
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
 
           if (flexiController.isFullScreen)
@@ -1372,12 +1377,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
             _startHideTimer();
           },
-          onDragUpdate: (){
-            setState(() {
-              _dragging=true;
-            });
-            _startHideTimer();
-          },
+
           colors: flexiController.cupertinoProgressColors ??
               FlexiProgressColors(
                 playedColor: const Color.fromARGB(

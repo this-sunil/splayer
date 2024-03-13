@@ -43,9 +43,7 @@ class PlayerWithControls extends StatelessWidget {
             maxScale: flexiController.maxScale,
             panEnabled: flexiController.zoomAndPan,
             panAxis: PanAxis.free,
-            minScale: 0.5,
             scaleEnabled: flexiController.zoomAndPan,
-
             child:FittedBox(
               fit: BoxFit.cover,
                 child:Container(
