@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:wakelock/wakelock.dart';
 
 typedef FlexiRoutePageBuilder = Widget Function(
   BuildContext context,
@@ -165,7 +165,7 @@ class FlexiState extends State<Flexi> {
     onEnterFullScreen();
 
     if (!widget.controller.allowedScreenSleep) {
-      WakelockPlus.enable();
+      Wakelock.enable();
     }
 
     await Navigator.of(
@@ -177,7 +177,7 @@ class FlexiState extends State<Flexi> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    WakelockPlus.disable();
+    Wakelock.disable();
 
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
