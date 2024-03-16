@@ -35,8 +35,8 @@ class CupertinoControls extends StatefulWidget {
     required this.playColor,
     required this.tag,
     this.showPlayButton = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Color backgroundColor;
   final Color iconColor;

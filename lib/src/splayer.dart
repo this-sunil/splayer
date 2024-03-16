@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import 'package:screen_brightness/screen_brightness.dart';
+
 import 'package:splayer/src/Flexi/cupertino/cupertino_controls.dart';
 
 import 'package:universal_html/html.dart' as uni_html;
