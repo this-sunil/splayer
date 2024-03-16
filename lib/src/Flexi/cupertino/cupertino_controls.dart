@@ -350,7 +350,84 @@ class _CupertinoControlsState extends State<CupertinoControls>
       onHover: (_) => _cancelAndRestartTimer(),
       child: GestureDetector(
         onTap: () => _cancelAndRestartTimer(),
-        child: AbsorbPointer(
+        child: Stack(
+          children: [
+
+            Positioned.fill(
+              //top: 0,left: 0,right: 0,bottom: 0,
+                child: Column(
+                  children: [
+
+                    _buildTopBar(
+                      backgroundColor,
+                      iconColor,
+                      barHeight,
+                      buttonPadding,
+                    ),
+
+                    Expanded(
+                        child:
+                        Center(
+                          child:
+                          _displayBufferingIndicator ?
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          )
+
+                              :
+                          _buildHitArea(barHeight),
+                        )
+                    ),
+
+                    if (_subtitleOn)
+                      Transform.translate(
+                        offset: Offset(
+                          0.0,
+                          notifier.hideStuff ? barHeight * 0.8 : 0.0,
+                        ),
+                        child: _buildSubtitles(flexiController.subtitle!),
+                      ),
+                    _buildBottomBar(backgroundColor, iconColor, barHeight),
+
+                  ],
+                )
+            ),
+
+            // if (_displayBufferingIndicator)
+            //   const Center(
+            //     child: CircularProgressIndicator(
+            //       strokeWidth: 2,
+            //       color: Colors.white,
+            //     ),
+            //   )
+            // else
+            //   _buildHitArea(),
+
+            // Column(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: <Widget>[
+            // _buildTopBar(
+            //   backgroundColor,
+            //   iconColor,
+            //   barHeight,
+            //   buttonPadding,
+            // ),
+            // const Spacer(),
+            // if (_subtitleOn)
+            //   Transform.translate(
+            //     offset: Offset(
+            //       0.0,
+            //       notifier.hideStuff ? barHeight * 0.8 : 0.0,
+            //     ),
+            //     child: _buildSubtitles(flexiController.subtitle!),
+            //   ),
+            // _buildBottomBar(backgroundColor, iconColor, barHeight),
+            //   ],
+            // ),
+          ],
+        ),
+      /*  child: AbsorbPointer(
           absorbing: notifier.hideStuff,
 
           child: Stack(
@@ -366,7 +443,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
                         iconColor,
                         barHeight,
                         buttonPadding,
-
                       ),
 
                       Expanded(
@@ -432,7 +508,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
             ],
           ),
            //working code
-           /* child: Stack(
+           *//* child: Stack(
               children: [
                 if (_displayBufferingIndicator)
                   const Center(
@@ -462,9 +538,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   ],
                 ),
               ],
-            ),*/
+            ),*//*
 
-        ),
+        ),*/
       ),
     );
   }
@@ -622,8 +698,13 @@ class _CupertinoControlsState extends State<CupertinoControls>
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          _buildPlayPause(controller, iconColor, barHeight),
-                          _buildLive(iconColor),
+                          _buildPosition(iconColor),
+                          _buildProgressBar(),
+                          _buildRemaining(iconColor),
+                          _buildSubtitleToggle(iconColor, barHeight),
+                          _buildLive(Colors.red),
+                          _buildExpandButton(iconColor, barHeight),
+
                         ],
                       )
                     : Row(
@@ -1402,6 +1483,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
               ),
             ),
           ),
+          SizedBox(width: 10),
           //mute button - old position
 
         ],

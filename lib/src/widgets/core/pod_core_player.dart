@@ -6,10 +6,14 @@ class _PodCoreVideoPlayer extends StatefulWidget {
   final double videoAspectRatio;
   final String tag;
 
+
+
+
   const _PodCoreVideoPlayer({
     required this.videoPlayerCtr,
     required this.videoAspectRatio,
     required this.tag,
+
   });
 
 
@@ -21,16 +25,15 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
   VideoPlayerController get videoPlayerCtr=>widget.videoPlayerCtr;
   double get videoAspectRatio=>widget.videoAspectRatio;
   String get tag=>widget.tag;
-  double _brightness = 1.0;
-  double _volume = 1.0;
+
   late PlayerNotifier notifier;
-  void setBrightness(double value) {
+ /* void setBrightness(double value) {
     // Implement logic to adjust brightness on your platform (Android/iOS)
     ScreenBrightness().setScreenBrightness(value);
     print('Brightness set to $value');
-  }
+  }*/
 
-  void setVolume(double value) {
+ /* void setVolume(double value) {
     // Implement logic to adjust volume on your platform (Android/iOS)
 
     print('Volume set to $value');
@@ -53,56 +56,13 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
       _volume = _volume.clamp(0.0, 1.0);
       setVolume(_volume);
     }
-  }
+  }*/
 
-  double calculateAspectRatio(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
+  TransformationController transformationController=TransformationController();
 
-    return width > height ? width / height : height / width;
-  }
-  late FlexiController controller;
   @override
   void initState() {
-    controller=FlexiController(
-        autoPlay: true,
-        autoInitialize: true,
 
-
-
-        showControlsOnInitialize: true,
-        customControls: Stack(
-          children: [
-            CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
-          /*  Align(
-                       alignment: Alignment.topRight,
-                       child:IconButton(onPressed: (){
-                         showModalBottomSheet<void>(
-                           context: context,
-                           builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
-                         );
-                       }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
-
-                   ),*/
-          ],
-        ),
-        /*additionalOptions: Align(
-               alignment: Alignment.topRight,
-               child:IconButton(onPressed: (){
-                 showModalBottomSheet<void>(
-                   context: context,
-                   builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
-                 );
-               }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
-
-           ),*/
-
-        aspectRatio: 16/9,
-        isBrignessOptionDisplay: true,
-        isVolumnOptionDisplay: true,
-        hideControlsTimer: const Duration(seconds: 3),
-        videoPlayerController: videoPlayerCtr);
     super.initState();
   }
   @override
@@ -131,7 +91,54 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
           ),
          child: Flexi(
            tag: tag,
-             controller:controller),
+
+
+             controller:FlexiController(
+               transformationController: transformationController,
+                 maxScale: 100,
+                 zoomAndPan: true,
+
+                 looping: podCtr.podPlayerConfig.isLooping,
+                 autoPlay: podCtr.podPlayerConfig.autoPlay,
+                 isLive:podCtr.podPlayerConfig.isLive,
+                 autoInitialize: true,
+
+
+                 showControlsOnInitialize: true,
+                 placeholder: const Text("Test",style:TextStyle(color: Colors.white)),
+
+                 customControls: Stack(
+                   fit: StackFit.loose,
+                   children: [
+                     CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
+                     /*  Align(
+                       alignment: Alignment.topRight,
+                       child:IconButton(onPressed: (){
+                         showModalBottomSheet<void>(
+                           context: context,
+                           builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
+                         );
+                       }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
+
+                   ),*/
+                   ],
+                 ),
+                 /*additionalOptions: Align(
+               alignment: Alignment.topRight,
+               child:IconButton(onPressed: (){
+                 showModalBottomSheet<void>(
+                   context: context,
+                   builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
+                 );
+               }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
+
+           ),*/
+
+                 aspectRatio: 16/9,
+                 isBrignessOptionDisplay: true,
+                 isVolumnOptionDisplay: true,
+                 hideControlsTimer: const Duration(seconds: 3),
+                 videoPlayerController: videoPlayerCtr)),
          /* child: GestureDetector(
             behavior: HitTestBehavior.opaque,
 

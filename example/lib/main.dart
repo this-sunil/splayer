@@ -58,9 +58,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late PodPlayerController controller;
+
   @override
   void initState() {
-    controller=PodPlayerController(playVideoFrom: PlayVideoFrom.youtube("qSc_sjKBdX0"))..initialise();
+    controller=PodPlayerController(
+        podPlayerConfig: const PodPlayerConfig(
+          isLive: false,
+        ),
+        playVideoFrom: PlayVideoFrom.youtube("zpsVpnvFfZQ",live: false))..initialise();
     controller.play();
     super.initState();
   }
@@ -74,7 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
           SizedBox(
 
               height: 250,
-              child:  PodVideoPlayer(controller: controller)
+              child:  PodVideoPlayer(
+
+
+                  controller: controller,isLive: false,)
           ),
           /* Expanded(
 

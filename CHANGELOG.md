@@ -1,3 +1,6 @@
-## 0.0.8
+## 1.0.0
 
 * TODO: Describe initial release.
+
+## 1.0.0
+* TODO: zoom & pan bug fix

@@ -2,8 +2,10 @@ part of 'package:splayer/src/splayer.dart';
 
 class FullScreenView extends StatefulWidget {
   final String tag;
+
   const FullScreenView({
     required this.tag,
+
     super.key,
   });
 
@@ -62,6 +64,7 @@ class _FullScreenViewState extends State<FullScreenView>
               child: loadingWidget)
               : podCtr.videoCtr!.value.isInitialized
               ?  _PodCoreVideoPlayer(
+
             tag: widget.tag,
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio:_podCtr.videoCtr!.value.aspectRatio,

@@ -54,6 +54,7 @@ class PodVideoPlayer extends StatefulWidget {
   final Widget Function()? onVideoError;
   final Widget? videoTitle;
   final Color? backgroundColor;
+  final bool isLive;
   final DecorationImage? videoThumbnail;
 
   /// Optional callback, fired when full screen mode toggles.
@@ -83,6 +84,7 @@ class PodVideoPlayer extends StatefulWidget {
     this.videoThumbnail,
     this.onToggleFullScreen,
     this.onLoading,
+    required this.isLive,
   }) {
     addToUiController();
   }
@@ -259,6 +261,7 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
         builder: (podCtr) {
           if (podCtr.isFullScreen) return _thumbnailAndLoadingWidget();
           return _PodCoreVideoPlayer(
+
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio: videoAspectRatio,
             tag: widget.controller.getTag,
@@ -269,6 +272,7 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
       return 
           
           _PodCoreVideoPlayer(
+
         videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,

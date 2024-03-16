@@ -3,6 +3,7 @@ class PodPlayerConfig {
   final bool isLooping;
   final bool forcedVideoFocus;
   final bool wakelockEnabled;
+  final bool isLive;
 
   /// Initial video quality priority. The first available option will be used,
   /// from start to the end of this list. If all options informed are not
@@ -16,6 +17,7 @@ class PodPlayerConfig {
     this.isLooping = false,
     this.forcedVideoFocus = false,
     this.wakelockEnabled = true,
+     this.isLive=false,
     this.videoQualityPriority = const [1080, 720, 360],
   });
 
@@ -24,11 +26,13 @@ class PodPlayerConfig {
     bool? isLooping,
     bool? forcedVideoFocus,
     bool? wakelockEnabled,
+    bool? isLive,
     List<int>? videoQualityPriority,
   }) {
     return PodPlayerConfig(
       autoPlay: autoPlay ?? this.autoPlay,
       isLooping: isLooping ?? this.isLooping,
+      isLive: isLive??this.isLive,
       forcedVideoFocus: forcedVideoFocus ?? this.forcedVideoFocus,
       wakelockEnabled: wakelockEnabled ?? this.wakelockEnabled,
       videoQualityPriority: videoQualityPriority ?? this.videoQualityPriority,
