@@ -25,7 +25,7 @@ class PlayerWithControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     double scale=1.0;
     double prevScale=1.0;
     final FlexiController flexiController = FlexiController.of(context);
