@@ -82,8 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child:  PodVideoPlayer(
 
 
-                  controller: controller,isLive: false,)
+                  controller: controller,isLive: false)
           ),
+
           /* Expanded(
 
               child: ListView.builder(

@@ -25,6 +25,7 @@ class PlayerWithControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+
     double scale=1.0;
     double prevScale=1.0;
     final FlexiController flexiController = FlexiController.of(context);
@@ -57,6 +58,7 @@ class PlayerWithControls extends StatelessWidget {
               flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
 
           },
+
           child:Stack(
 
             fit: StackFit.expand,

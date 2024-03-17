@@ -99,11 +99,10 @@ class FlexiState extends State<Flexi> {
     Animation<double> animation,
     FlexiControllerProvider controllerProvider,
   ) {
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
-        alignment: Alignment.center,
-        color: Colors.black,
+      body: SizedBox.expand(
         child: controllerProvider,
       ),
     );
@@ -176,7 +175,7 @@ class FlexiState extends State<Flexi> {
     await Navigator.of(
       context,
       rootNavigator: widget.controller.useRootNavigator,
-    ).push(route);
+    ).push(route).whenComplete(() => SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky));
     _isFullScreen = false;
     widget.controller.exitFullScreen();
 
@@ -199,7 +198,7 @@ class FlexiState extends State<Flexi> {
         widget.controller.videoPlayerController.value.size.height;
 
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: []);
     // if (widget.controller.systemOverlaysOnEnterFullScreen != null) {
     //   /// Optional user preferred settings
     //   SystemChrome.setEnabledSystemUIMode(

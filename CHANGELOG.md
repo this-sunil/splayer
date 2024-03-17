@@ -11,5 +11,5 @@
 ## 1.0.4
 * TODO: fix bugs
 
-## 1.0.5
+## 1.0.6
 * TODO: fix bugs Crash
