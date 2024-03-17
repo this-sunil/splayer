@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/services.dart';
 import 'package:splayer/src/Flexi/flexi_player.dart';
 import 'package:splayer/src/Flexi/helpers/adaptive_controls.dart';
@@ -22,12 +22,9 @@ double calculateAspectRatio(BuildContext context) {
 class PlayerWithControls extends StatelessWidget {
   final String tag;
   const PlayerWithControls({super.key, required this.tag});
-
-
-
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     double scale=1.0;
     double prevScale=1.0;
     final FlexiController flexiController = FlexiController.of(context);
@@ -57,7 +54,7 @@ class PlayerWithControls extends StatelessWidget {
               scale=prevScale*details.scale;
               print("Scale Update $scale");
               scale=scale.clamp(1.0, 100.0);
-              flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, 100.0);
+              flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
 
           },
           child:Stack(

@@ -78,6 +78,7 @@ class FlexiState extends State<Flexi> {
         context,
         rootNavigator: widget.controller.useRootNavigator,
       ).pop();
+
       _isFullScreen = false;
     }
   }
@@ -131,9 +132,12 @@ class FlexiState extends State<Flexi> {
 
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
-      child:  ChangeNotifierProvider<PlayerNotifier>.value(
-        value: notifier,
-        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+      child:FadeTransition(
+        opacity: animation,
+        child: ChangeNotifierProvider<PlayerNotifier>.value(
+          value: notifier,
+          builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+        ),
       ),
     );
 
@@ -155,13 +159,10 @@ class FlexiState extends State<Flexi> {
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
 
-    final TransitionRoute<dynamic> route = PageRouteBuilder<void>(
+    final TransitionRoute<dynamic> route = PageRouteBuilder<dynamic>(
         fullscreenDialog: true,
         opaque: false,
         pageBuilder: _fullScreenRoutePageBuilder,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
-          opacity: animation,
-          child: child),
       reverseTransitionDuration: const Duration(milliseconds: 400),
 
     );
@@ -197,8 +198,8 @@ class FlexiState extends State<Flexi> {
     final videoHeight =
         widget.controller.videoPlayerController.value.size.height;
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.bottom]);
 
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     // if (widget.controller.systemOverlaysOnEnterFullScreen != null) {
     //   /// Optional user preferred settings
     //   SystemChrome.setEnabledSystemUIMode(
