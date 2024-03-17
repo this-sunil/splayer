@@ -7,3 +7,6 @@
 
 ## 1.0.3
 * TODO: update dependencies
+
+## 1.0.4
+* TODO: fix bugs

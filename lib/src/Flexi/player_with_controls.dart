@@ -16,23 +16,21 @@ double calculateAspectRatio(BuildContext context) {
   return width > height ? width / height : height / width;
 }
 
-class PlayerWithControls extends StatefulWidget {
+
+
+
+class PlayerWithControls extends StatelessWidget {
   final String tag;
-  const PlayerWithControls({Key? key, required this.tag}) : super(key: key);
+  const PlayerWithControls({super.key, required this.tag});
 
-  @override
-  State<PlayerWithControls> createState() => _PlayerWithControlsState();
-}
 
-class _PlayerWithControlsState extends State<PlayerWithControls> {
-  double scale=1.0;
-  double prevScale=1.0;
+
   @override
   Widget build(BuildContext context) {
-
-
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    double scale=1.0;
+    double prevScale=1.0;
     final FlexiController flexiController = FlexiController.of(context);
-
 
     Widget buildControls(
         BuildContext context,
@@ -40,7 +38,7 @@ class _PlayerWithControlsState extends State<PlayerWithControls> {
 
         ) {
       return flexiController.showControls
-          ? flexiController.customControls ??   AdaptiveControls(tag:widget.tag)
+          ? flexiController.customControls ??   AdaptiveControls(tag:tag)
           : const SizedBox();
     }
 
@@ -55,40 +53,40 @@ class _PlayerWithControlsState extends State<PlayerWithControls> {
           },
           trackpadScrollCausesScale: true,
           onScaleUpdate: (details){
-            setState(() {
+
               scale=prevScale*details.scale;
               print("Scale Update $scale");
               scale=scale.clamp(1.0, 100.0);
               flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, 100.0);
-            });
+
           },
           child:Stack(
 
-      alignment: Alignment.bottomCenter,
-        fit: StackFit.expand,
-        children: <Widget>[
+            fit: StackFit.expand,
+            children: <Widget>[
 
-          if (flexiController.placeholder != null)
-            flexiController.placeholder!,
-          InteractiveViewer(
-            boundaryMargin: const EdgeInsets.all(double.infinity),
-            alignment: Alignment.center,
-            maxScale: flexiController.maxScale,
-            panEnabled: flexiController.zoomAndPan,
-            scaleEnabled: flexiController.zoomAndPan,
-            panAxis: PanAxis.free,
-            trackpadScrollCausesScale: true,
-            clipBehavior: Clip.hardEdge,
-            transformationController: flexiController.transformationController,
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                height: 500,
-                width: MediaQuery.sizeOf(context).width,
-                child:  VideoPlayer(flexiController.videoPlayerController),
-              ),
-            ),
-            /* child: FittedBox(
+              if (flexiController.placeholder != null)
+                flexiController.placeholder!,
+              InteractiveViewer(
+                boundaryMargin: const EdgeInsets.all(double.infinity),
+                alignment: Alignment.center,
+                maxScale: flexiController.maxScale,
+                panEnabled: flexiController.zoomAndPan,
+                scaleEnabled: flexiController.zoomAndPan,
+                panAxis: PanAxis.free,
+                trackpadScrollCausesScale: true,
+                clipBehavior: Clip.hardEdge,
+                transformationController: flexiController.transformationController,
+                child: FittedBox(
+                  fit: BoxFit.cover,
+
+                  child: SizedBox(
+                    height: 500,
+                    width: MediaQuery.sizeOf(context).width,
+                    child:  VideoPlayer(flexiController.videoPlayerController),
+                  ),
+                ),
+                /* child: FittedBox(
               clipBehavior: Clip.hardEdge,
               fit: flexiController.isFullScreen?BoxFit.cover:BoxFit.fill,
               child: SizedBox(
@@ -98,35 +96,35 @@ class _PlayerWithControlsState extends State<PlayerWithControls> {
                   child: VideoPlayer(flexiController.videoPlayerController)
               ),
             ),*/
-          ),
+              ),
 
 
-         if (flexiController.overlay != null) flexiController.overlay!,
-          if (Theme.of(context).platform != TargetPlatform.iOS)
-            Consumer<PlayerNotifier>(
-              builder: (
-                  BuildContext context,
-                  PlayerNotifier notifier,
-                  Widget? widget,
-                  ) =>
-                  Visibility(
-                    visible: !notifier.hideStuff,
-                    child: AnimatedOpacity(
-                      opacity: notifier.hideStuff ? 0.0 : 0.8,
-                      duration: const Duration(
-                        milliseconds: 250,
+              if (flexiController.overlay != null) flexiController.overlay!,
+              if (Theme.of(context).platform != TargetPlatform.iOS)
+                Consumer<PlayerNotifier>(
+                  builder: (
+                      BuildContext context,
+                      PlayerNotifier notifier,
+                      Widget? widget,
+                      ) =>
+                      Visibility(
+                        visible: !notifier.hideStuff,
+                        child: AnimatedOpacity(
+                          opacity: notifier.hideStuff ? 0.0 : 0.8,
+                          duration: const Duration(
+                            milliseconds: 250,
+                          ),
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(color: Colors.transparent),
+                            child: SizedBox(),
+                          ),
+                        ),
                       ),
-                      child: const DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.transparent),
-                        child: SizedBox(),
-                      ),
-                    ),
-                  ),
-            ),
-          buildControls(context, flexiController),
+                ),
+              buildControls(context, flexiController),
 
-        ],
-      ));
+            ],
+          ));
     }
 
     return Center(

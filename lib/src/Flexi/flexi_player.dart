@@ -127,15 +127,13 @@ class FlexiState extends State<Flexi> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
-      child: FadeTransition(
-        opacity: animation,
-       child: ChangeNotifierProvider<PlayerNotifier>.value(
-         value: notifier,
-         builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
-       ),
+      child:  ChangeNotifierProvider<PlayerNotifier>.value(
+        value: notifier,
+        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
       ),
     );
 
@@ -156,11 +154,16 @@ class FlexiState extends State<Flexi> {
   }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
-    final TransitionRoute<dynamic> route = PageRouteBuilder<dynamic>(
-      fullscreenDialog: true,
-      opaque: false,
+
+    final TransitionRoute<dynamic> route = PageRouteBuilder<void>(
+        fullscreenDialog: true,
+        opaque: false,
+        pageBuilder: _fullScreenRoutePageBuilder,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
+          opacity: animation,
+          child: child),
       reverseTransitionDuration: const Duration(milliseconds: 400),
-      pageBuilder: _fullScreenRoutePageBuilder,
+
     );
 
     onEnterFullScreen();
