@@ -127,6 +127,7 @@ class FlexiState extends State<Flexi> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
       child: FadeTransition(

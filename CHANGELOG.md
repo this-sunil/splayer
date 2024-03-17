@@ -4,3 +4,6 @@
 
 ## 1.0.2
 * TODO: zoom & pan bug fix
+
+## 1.0.3
+* TODO: update dependencies

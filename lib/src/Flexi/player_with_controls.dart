@@ -29,7 +29,7 @@ class _PlayerWithControlsState extends State<PlayerWithControls> {
   double prevScale=1.0;
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
 
     final FlexiController flexiController = FlexiController.of(context);
 
@@ -71,6 +71,7 @@ class _PlayerWithControlsState extends State<PlayerWithControls> {
           if (flexiController.placeholder != null)
             flexiController.placeholder!,
           InteractiveViewer(
+            boundaryMargin: const EdgeInsets.all(double.infinity),
             alignment: Alignment.center,
             maxScale: flexiController.maxScale,
             panEnabled: flexiController.zoomAndPan,
