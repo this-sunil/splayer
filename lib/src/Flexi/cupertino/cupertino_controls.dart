@@ -698,6 +698,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
+
                           _buildPosition(iconColor),
                           _buildProgressBar(),
                           _buildRemaining(iconColor),

@@ -104,6 +104,7 @@ class PodVideoPlayer extends StatefulWidget {
       ..onToggleFullScreen = onToggleFullScreen
       ..onLoading = onLoading
       ..videoThumbnail = videoThumbnail;
+
   }
 
   @override

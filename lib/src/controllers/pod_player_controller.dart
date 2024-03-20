@@ -38,6 +38,8 @@ class PodPlayerController {
         playVideoFrom: playVideoFrom,
         playerConfig: podPlayerConfig,
       );
+    print("Initialize Pod Setting");
+    print("Live Config=>${_ctr.podPlayerConfig.isLive}");
   }
 
   /// Initializes the video player.

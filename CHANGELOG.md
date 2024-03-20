@@ -13,3 +13,6 @@
 
 ## 1.0.7
 * TODO: fix bugs Crash
+
+## 1.0.8
+* TODO: config is live 

@@ -78,7 +78,6 @@ class PlayerWithControls extends StatelessWidget {
                 transformationController: flexiController.transformationController,
                 child: FittedBox(
                   fit: BoxFit.cover,
-
                   child: SizedBox(
                     height: 500,
                     width: MediaQuery.sizeOf(context).width,

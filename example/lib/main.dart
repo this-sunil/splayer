@@ -63,9 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     controller=PodPlayerController(
         podPlayerConfig: const PodPlayerConfig(
-          isLive: false,
+          isLive: true,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("zpsVpnvFfZQ",live: false))..initialise();
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=Xmm3Kr5P1Uw",live: true))..initialise();
     controller.play();
     super.initState();
   }
@@ -77,12 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body:SafeArea(child: Column(
         children: [
           SizedBox(
-
               height: 250,
               child:  PodVideoPlayer(
-
-
-                  controller: controller,isLive: false)
+                  controller: controller,isLive: true)
           ),
 
           /* Expanded(

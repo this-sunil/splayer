@@ -75,7 +75,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
 
 
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
-    print("PodController =>${podCtr.videoCtr!.value.isPlaying}");
+    print("PodController =>${podCtr.videoCtr!.value.isPlaying} & Live => ${podCtr.podPlayerConfig.isLive}");
     return Builder(
       builder: (ctrx) {
 

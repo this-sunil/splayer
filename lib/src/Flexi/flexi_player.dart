@@ -87,6 +87,7 @@ class FlexiState extends State<Flexi> {
   Widget build(BuildContext context) {
     return FlexiControllerProvider(
       controller: widget.controller,
+
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
         builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
