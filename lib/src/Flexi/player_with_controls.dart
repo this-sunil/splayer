@@ -76,13 +76,10 @@ class PlayerWithControls extends StatelessWidget {
                 trackpadScrollCausesScale: true,
                 clipBehavior: Clip.hardEdge,
                 transformationController: flexiController.transformationController,
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    height: 500,
-                    width: MediaQuery.sizeOf(context).width,
+                child:  AspectRatio(
+                  aspectRatio: calculateAspectRatio(context),
                     child:  VideoPlayer(flexiController.videoPlayerController),
-                  ),
+
                 ),
                 /* child: FittedBox(
               clipBehavior: Clip.hardEdge,

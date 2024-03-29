@@ -702,7 +702,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                           _buildPosition(iconColor),
                           _buildProgressBar(),
                           _buildRemaining(iconColor),
-                          _buildSubtitleToggle(iconColor, barHeight),
+                         /* _buildSubtitleToggle(iconColor, barHeight),*/
                           _buildLive(Colors.red),
                           _buildExpandButton(iconColor, barHeight),
 

@@ -14,5 +14,8 @@
 ## 1.0.7
 * TODO: fix bugs Crash
 
-## 1.0.8
+## 1.0.9
 * TODO: config is live 
+
+## 1.0.10
+* TODO : Fix the Aspect Ratio
