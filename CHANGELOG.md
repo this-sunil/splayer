@@ -19,3 +19,6 @@
 
 ## 1.0.10
 * TODO : Fix the Aspect Ratio
+
+## 1.0.11
+* TODO : Fix the Aspect Ratio

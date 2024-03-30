@@ -77,9 +77,8 @@ class PlayerWithControls extends StatelessWidget {
                 clipBehavior: Clip.hardEdge,
                 transformationController: flexiController.transformationController,
                 child:  AspectRatio(
-                  aspectRatio: calculateAspectRatio(context),
+                  aspectRatio: flexiController.aspectRatio!.toDouble(),
                     child:  VideoPlayer(flexiController.videoPlayerController),
-
                 ),
                 /* child: FittedBox(
               clipBehavior: Clip.hardEdge,
