@@ -161,6 +161,16 @@ class FlexiState extends State<Flexi> {
         fullscreenDialog: true,
         opaque: false,
         pageBuilder: _fullScreenRoutePageBuilder,
+        transitionsBuilder: (___, Animation<double> animation, secondaryAnimation, Widget child) {
+          return FadeTransition(
+            opacity: animation,
+            child: RotationTransition(
+              turns: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+              child: child,
+            ),
+          );
+        },
+      transitionDuration: const Duration(milliseconds: 400),
       reverseTransitionDuration: const Duration(milliseconds: 400),
 
     );

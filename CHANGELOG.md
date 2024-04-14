@@ -25,3 +25,7 @@
 
 ## 1.0.12
 * TODO : Update dependencies
+
+## 1.0.13
+* Todo : Broken smooth change
+
