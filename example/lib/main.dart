@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         podPlayerConfig: const PodPlayerConfig(
           isLive: false,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=waBUMYJfkuQ",live: false))..initialise();
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=bJXY9TO98Dg",live: false))..initialise();
     controller.play();
     super.initState();
   }

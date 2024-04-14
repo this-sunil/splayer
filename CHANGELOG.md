@@ -22,3 +22,6 @@
 
 ## 1.0.11
 * TODO : Fix the Aspect Ratio
+
+## 1.0.12
+* TODO : Update dependencies

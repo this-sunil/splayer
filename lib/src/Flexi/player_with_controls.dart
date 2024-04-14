@@ -49,6 +49,7 @@ class PlayerWithControls extends StatelessWidget {
             prevScale=scale;
             print("Scale Start");
           },
+
           trackpadScrollCausesScale: true,
           onScaleUpdate: (details){
 
@@ -67,18 +68,18 @@ class PlayerWithControls extends StatelessWidget {
               if (flexiController.placeholder != null)
                 flexiController.placeholder!,
               InteractiveViewer(
-                boundaryMargin: const EdgeInsets.all(double.infinity),
+                boundaryMargin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 maxScale: flexiController.maxScale,
                 panEnabled: flexiController.zoomAndPan,
                 scaleEnabled: flexiController.zoomAndPan,
                 panAxis: PanAxis.free,
                 trackpadScrollCausesScale: true,
-                clipBehavior: Clip.hardEdge,
+                clipBehavior: Clip.antiAlias,
                 transformationController: flexiController.transformationController,
                 child:  AspectRatio(
-                  aspectRatio: flexiController.aspectRatio!.toDouble(),
-                    child:  VideoPlayer(flexiController.videoPlayerController),
+                  aspectRatio: MediaQuery.sizeOf(context).width/MediaQuery.sizeOf(context).height,
+                    child:  Center(child: VideoPlayer(flexiController.videoPlayerController)),
                 ),
                 /* child: FittedBox(
               clipBehavior: Clip.hardEdge,

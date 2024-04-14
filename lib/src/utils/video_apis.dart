@@ -25,36 +25,48 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getVimeoVideoQualityUrls(
-    String videoId,
-    String? hash,
-  ) async {
+      String videoId,
+      String? hash,
+      ) async {
     try {
       final response = await _makeRequestHash(videoId, hash);
-      final jsonData = jsonDecode(response.body)['request']['files']
-          ['progressive'] as List<dynamic>;
-      final progressiveUrls = List.generate(
-        jsonData.length,
-        (index) => VideoQalityUrls(
-          quality: int.parse(
-            (jsonData[index]['quality'] as String?)?.split('p').first ?? '0',
-          ),
-          url: jsonData[index]['url'] as String,
-        ),
-      );
-      if (progressiveUrls.isEmpty) {
-        final jsonRes =
-            jsonDecode(response.body)['request']['files']['hls']['cdns'];
-        for (final element in (jsonRes as Map).entries.toList()) {
-          progressiveUrls.add(
-            VideoQalityUrls(
-              quality: 720,
-              url: element.value['url'] as String,
+      final jsonData = jsonDecode(response.body)['request']['files'];
+      final dashData = jsonData['dash'];
+      final hlsData = jsonData['hls'];
+      final defaultCDN = hlsData['default_cdn'];
+      final cdnVideoUrl = (hlsData['cdns'][defaultCDN]['url'] as String?) ?? '';
+      final List<dynamic> rawStreamUrls =
+          (dashData['streams'] as List<dynamic>?) ?? <dynamic>[];
+
+      final List<VideoQalityUrls> vimeoQualityUrls = [];
+
+      for (final item in rawStreamUrls) {
+        final sepList = cdnVideoUrl.split('/sep/video/');
+        final firstUrlPiece = sepList.firstOrNull ?? '';
+        final lastUrlPiece =
+            ((sepList.lastOrNull ?? '').split('/').lastOrNull) ??
+                (sepList.lastOrNull ?? '');
+        final String urlId =
+            ((item['id'] ?? '') as String).split('-').firstOrNull ?? '';
+        vimeoQualityUrls.add(
+          VideoQalityUrls(
+            quality: int.parse(
+              (item['quality'] as String?)?.split('p').first ?? '0',
             ),
-          );
-          break;
-        }
+            url: '$firstUrlPiece/sep/video/$urlId/$lastUrlPiece',
+          ),
+        );
       }
-      return progressiveUrls;
+      if (vimeoQualityUrls.isEmpty) {
+        vimeoQualityUrls.add(
+          VideoQalityUrls(
+            quality: 720,
+            url: cdnVideoUrl,
+          ),
+        );
+      }
+
+      return vimeoQualityUrls;
     } catch (error) {
       if (error.toString().contains('XMLHttpRequest')) {
         log(
@@ -69,15 +81,16 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getVimeoPrivateVideoQualityUrls(
-    String videoId,
-    Map<String, String> httpHeader,
-  ) async {
+      String videoId,
+      Map<String, String> httpHeader,
+      ) async {
     try {
       final response = await http.get(
         Uri.parse('https://api.vimeo.com/videos/$videoId'),
         headers: httpHeader,
       );
-      final jsonData = jsonDecode(response.body)['files'] as List<dynamic>;
+      final jsonData =
+          (jsonDecode(response.body)['files'] as List<dynamic>?) ?? [];
 
       final List<VideoQalityUrls> list = [];
       for (int i = 0; i < jsonData.length; i++) {
@@ -108,9 +121,9 @@ class VideoApis {
   }
 
   static Future<List<VideoQalityUrls>?> getYoutubeVideoQualityUrls(
-    String youtubeIdOrUrl,
-    bool live,
-  ) async {
+      String youtubeIdOrUrl,
+      bool live,
+      ) async {
     try {
       final yt = YoutubeExplode();
       final urls = <VideoQalityUrls>[];
@@ -126,10 +139,10 @@ class VideoApis {
         );
       } else {
         final manifest =
-            await yt.videos.streamsClient.getManifest(youtubeIdOrUrl);
+        await yt.videos.streamsClient.getManifest(youtubeIdOrUrl);
         urls.addAll(
           manifest.muxed.map(
-            (element) => VideoQalityUrls(
+                (element) => VideoQalityUrls(
               quality: int.parse(element.qualityLabel.split('p')[0]),
               url: element.url.toString(),
             ),
