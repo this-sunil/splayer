@@ -29,3 +29,6 @@
 ## 1.0.13
 * Todo : Broken smooth change
 
+## 1.0.14
+* Todo : Broken Strech video
+

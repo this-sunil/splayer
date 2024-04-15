@@ -316,7 +316,6 @@ class FlexiController extends ChangeNotifier {
   FlexiController copyWith({
     bool? isBrignessOptionDisplay,
     bool? isVolumnOptionDisplay,
-
     VideoPlayerController? videoPlayerController,
     OptionsTranslation? optionsTranslation,
     double? aspectRatio,
