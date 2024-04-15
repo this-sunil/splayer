@@ -49,17 +49,13 @@ class PlayerWithControls extends StatelessWidget {
             prevScale=scale;
             print("Scale Start");
           },
-
           trackpadScrollCausesScale: true,
           onScaleUpdate: (details){
-
-              scale=prevScale*details.scale;
+            scale=prevScale*details.scale;
               print("Scale Update $scale");
               scale=scale.clamp(1.0, 100.0);
               flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
-
-          },
-
+              },
           child:Stack(
 
             fit: StackFit.expand,
@@ -80,12 +76,13 @@ class PlayerWithControls extends StatelessWidget {
                 child:  FittedBox(
                   fit: BoxFit.fill,
                   child: SizedBox(
-                    width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height,
+                    width: 500,
+                    height: 500,
                     child: VideoPlayer(flexiController.videoPlayerController),
                   ),
                 ),
-                /* child: FittedBox(
+              ),
+              /* child: FittedBox(
               clipBehavior: Clip.hardEdge,
               fit: flexiController.isFullScreen?BoxFit.cover:BoxFit.fill,
               child: SizedBox(
@@ -95,8 +92,6 @@ class PlayerWithControls extends StatelessWidget {
                   child: VideoPlayer(flexiController.videoPlayerController)
               ),
             ),*/
-              ),
-
 
               if (flexiController.overlay != null) flexiController.overlay!,
               if (Theme.of(context).platform != TargetPlatform.iOS)

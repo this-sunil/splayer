@@ -29,6 +29,9 @@
 ## 1.0.13
 * Todo : Broken smooth change
 
-## 1.0.14
+## 1.0.15
 * Todo : Broken Strech video
+
+## 1.0.16
+* Update Dependecies wakelock plus
 

@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         podPlayerConfig: const PodPlayerConfig(
           isLive: false,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=bJXY9TO98Dg",live: false))..initialise();
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=LXb3EKWsInQ",live: false))..initialise();
     controller.play();
     super.initState();
   }
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           SizedBox(
               height: 250,
               child:  PodVideoPlayer(
-                  controller: controller,isLive: true)
+                  controller: controller,isLive: true),
           ),
 
           /* Expanded(
