@@ -72,8 +72,6 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-
-
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
     print("PodController =>${podCtr.videoCtr!.value.isPlaying} & Live => ${podCtr.podPlayerConfig.isLive}");
     return Builder(
@@ -95,188 +93,21 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
 
              controller:FlexiController(
                transformationController: transformationController,
-                 maxScale: 100,
+                 maxScale: 10,
                  zoomAndPan: true,
 
                  looping: podCtr.podPlayerConfig.isLooping,
                  autoPlay: podCtr.podPlayerConfig.autoPlay,
                  isLive:podCtr.podPlayerConfig.isLive,
                  autoInitialize: true,
-
-
                  showControlsOnInitialize: true,
-                 placeholder: const Text("Test",style:TextStyle(color: Colors.white)),
-
-                 customControls: Stack(
-                   fit: StackFit.loose,
-                   children: [
-                     CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
-                     /*  Align(
-                       alignment: Alignment.topRight,
-                       child:IconButton(onPressed: (){
-                         showModalBottomSheet<void>(
-                           context: context,
-                           builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
-                         );
-                       }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
-
-                   ),*/
-                   ],
-                 ),
-                 /*additionalOptions: Align(
-               alignment: Alignment.topRight,
-               child:IconButton(onPressed: (){
-                 showModalBottomSheet<void>(
-                   context: context,
-                   builder: (context) => SafeArea(child: _MobileBottomSheet(tag: tag)),
-                 );
-               }, icon: const Icon(BootstrapIcons.gear,color: Colors.white))
-
-           ),*/
-
+                 customControls: CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
                  aspectRatio: 16/9,
                  isBrignessOptionDisplay: true,
                  isVolumnOptionDisplay: true,
                  hideControlsTimer: const Duration(seconds: 3),
                  videoPlayerController: videoPlayerCtr)),
-         /* child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
 
-            *//*  onHorizontalDragUpdate: _handleHorizontalDrag,*//*
-              child:Stack(
-            fit: StackFit.expand,
-            children: [
-
-
-              InteractiveViewer(
-                  scaleEnabled: true,
-                  maxScale: 100.0,
-                  child:FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                        height: 500,
-                        width: MediaQuery.sizeOf(context).width,
-                        child: VideoPlayer(videoPlayerCtr),
-                      ))
-              ),
-
-
-
-
-              GetBuilder<PodGetXVideoController>(
-                tag: tag,
-                id: 'podVideoState',
-                builder: (_) => GetBuilder<PodGetXVideoController>(
-                  tag: tag,
-                  id: 'video-progress',
-                  builder: (podCtr) {
-                    if (podCtr.videoThumbnail == null) {
-                      return const SizedBox();
-                    }
-
-                    if (podCtr.podVideoState == PodVideoState.paused &&
-                        podCtr.videoPosition == Duration.zero) {
-                      return SizedBox.expand(
-                        child: TweenAnimationBuilder<double>(
-                          builder: (context, value, child) => Opacity(
-                            opacity: value,
-                            child: child,
-                          ),
-                          tween: Tween<double>(begin: 0.7, end: 1),
-                          duration: const Duration(milliseconds: 400),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              image: podCtr.videoThumbnail,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ),
-              _VideoOverlays(tag: tag),
-              IgnorePointer(
-                child: GetBuilder<PodGetXVideoController>(
-                  tag: tag,
-                  id: 'podVideoState',
-                  builder: (podCtr) {
-                    final loadingWidget = podCtr.onLoading?.call(context) ??
-                        const Center(
-                          child: CircularProgressIndicator(
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        );
-
-                    if (kIsWeb) {
-                      switch (podCtr.podVideoState) {
-                        case PodVideoState.loading:
-                          return loadingWidget;
-                        case PodVideoState.paused:
-                          return const Center(
-                            child: Icon(
-                              Icons.play_arrow,
-                              size: 45,
-                              color: Colors.white,
-                            ),
-                          );
-                        case PodVideoState.playing:
-                          return Center(
-                            child: TweenAnimationBuilder<double>(
-                              builder: (context, value, child) => Opacity(
-                                opacity: value,
-                                child: child,
-                              ),
-                              tween: Tween<double>(begin: 1, end: 0),
-                              duration: const Duration(seconds: 1),
-                              child: const Icon(
-                                Icons.pause,
-                                size: 45,
-                                color: Colors.white,
-                              ),
-                            ),
-                          );
-                        case PodVideoState.error:
-                          return const SizedBox();
-                      }
-                    } else {
-                      if (podCtr.podVideoState == PodVideoState.loading) {
-                        return loadingWidget;
-                      }
-                      return const SizedBox();
-                    }
-                  },
-                ),
-              ),
-              if (!kIsWeb)
-                GetBuilder<PodGetXVideoController>(
-                  tag: tag,
-                  id: 'full-screen',
-                  builder: (podCtr) => podCtr.isFullScreen
-                      ? const SizedBox()
-                      : GetBuilder<PodGetXVideoController>(
-                    tag: tag,
-                    id: 'overlay',
-                    builder: (podCtr) => podCtr.isOverlayVisible ||
-                        !podCtr.alwaysShowProgressBar
-                        ? const SizedBox()
-                        : Align(
-                      alignment: Alignment.bottomCenter,
-                      child: PodProgressBar(
-                        tag: tag,
-                        alignment: Alignment.bottomCenter,
-                        podProgressBarConfig:
-                        podCtr.podProgressBarConfig,
-                      ),
-                    ),
-                  ),
-                ),
-
-            ],
-          )),*/
         );
       },
     );

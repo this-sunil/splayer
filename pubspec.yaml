@@ -22,6 +22,7 @@ dependencies:
   provider: ^6.1.2
   volume_controller: ^2.0.7
   bootstrap_icons: ^1.11.3
+  widget_zoom: ^0.0.4
 
 
 

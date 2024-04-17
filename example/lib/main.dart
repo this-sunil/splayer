@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         podPlayerConfig: const PodPlayerConfig(
           isLive: false,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=LXb3EKWsInQ",live: false))..initialise();
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=IrfYxlqSJHE",live: false))..initialise();
     controller.play();
     super.initState();
   }
@@ -82,15 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   controller: controller,isLive: true),
           ),
 
-          /* Expanded(
 
-              child: ListView.builder(
-
-              itemCount: 100,
-
-              itemBuilder: (context,index){
-            return Card(child: ListTile(title: Text("Hi $index"),));
-          }))*/
         ],
       ))
  

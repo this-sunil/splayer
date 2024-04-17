@@ -103,7 +103,11 @@ class FlexiState extends State<Flexi> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body:controllerProvider,
+      body: Container(
+        alignment: Alignment.center,
+        color: Colors.black,
+        child: controllerProvider,
+      ),
     );
   }
 

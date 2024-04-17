@@ -44,54 +44,44 @@ class PlayerWithControls extends StatelessWidget {
         FlexiController flexiController,
         BuildContext context,
         ) {
+      final aspectRatio=MediaQuery.sizeOf(context).aspectRatio;
+      bool isLandscape=aspectRatio>1;
+      print("Landscape$isLandscape");
+      TapDownDetails? tapDownDetails;
       return GestureDetector(
           onScaleStart: (details){
             prevScale=scale;
             print("Scale Start");
+
           },
-          trackpadScrollCausesScale: true,
           onScaleUpdate: (details){
             scale=prevScale*details.scale;
               print("Scale Update $scale");
-              scale=scale.clamp(1.0, 100.0);
-              flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
+              scale=scale.clamp(1.0, 10.0);
+              flexiController.transformationController!.value=Matrix4.identity()..scale(scale,scale,scale);
               },
           child:Stack(
-
             fit: StackFit.expand,
+
             children: <Widget>[
 
-              if (flexiController.placeholder != null)
-                flexiController.placeholder!,
               InteractiveViewer(
-                boundaryMargin: const EdgeInsets.all(10),
+                transformationController: flexiController.transformationController,
                 alignment: Alignment.center,
+                panAxis: PanAxis.free,
+                boundaryMargin: const EdgeInsets.all(double.infinity),
                 maxScale: flexiController.maxScale,
                 panEnabled: flexiController.zoomAndPan,
                 scaleEnabled: flexiController.zoomAndPan,
-                panAxis: PanAxis.free,
-                trackpadScrollCausesScale: true,
                 clipBehavior: Clip.antiAlias,
-                transformationController: flexiController.transformationController,
-                child:  FittedBox(
-                  fit: BoxFit.fill,
-                  child: SizedBox(
-                    width: 500,
-                    height: 500,
+                child: Center(
+                  child: !isLandscape?VideoPlayer(flexiController.videoPlayerController):AspectRatio(
+                    aspectRatio: flexiController.videoPlayerController.value.aspectRatio,
                     child: VideoPlayer(flexiController.videoPlayerController),
                   ),
                 ),
               ),
-              /* child: FittedBox(
-              clipBehavior: Clip.hardEdge,
-              fit: flexiController.isFullScreen?BoxFit.cover:BoxFit.fill,
-              child: SizedBox(
 
-                  width: MediaQuery.sizeOf(context).width,
-                  height: 500,
-                  child: VideoPlayer(flexiController.videoPlayerController)
-              ),
-            ),*/
 
               if (flexiController.overlay != null) flexiController.overlay!,
               if (Theme.of(context).platform != TargetPlatform.iOS)
@@ -109,25 +99,34 @@ class PlayerWithControls extends StatelessWidget {
                             milliseconds: 250,
                           ),
                           child: const DecoratedBox(
-                            decoration: BoxDecoration(color: Colors.transparent),
-                            child: SizedBox(),
+                            decoration: BoxDecoration(color: Colors.black54),
+                            child: SizedBox.expand(),
                           ),
                         ),
                       ),
                 ),
-              buildControls(context, flexiController),
+
+                buildControls(context, flexiController)
+
 
             ],
           ));
     }
 
-    return Center(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child:  buildPlayerWithControls(flexiController, context),
-      ),
-    );
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Center(
+            child: Container(
+              color: Colors.black,
+              height: constraints.maxHeight,
+              width: constraints.maxWidth,
+              child: AspectRatio(
+                aspectRatio: calculateAspectRatio(context),
+                child: buildPlayerWithControls(flexiController, context),
+              ),
+            ),
+          );
+        });
   }
 }
 
