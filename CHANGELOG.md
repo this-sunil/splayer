@@ -35,3 +35,6 @@
 ## 1.0.16
 * Update Dependecies wakelock plus
 
+## 1.0.17
+* Update Player
+

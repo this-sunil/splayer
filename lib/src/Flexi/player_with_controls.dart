@@ -47,7 +47,7 @@ class PlayerWithControls extends StatelessWidget {
       final aspectRatio=MediaQuery.sizeOf(context).aspectRatio;
       bool isLandscape=aspectRatio>1;
       print("Landscape$isLandscape");
-      TapDownDetails? tapDownDetails;
+
       return GestureDetector(
           onScaleStart: (details){
             prevScale=scale;
