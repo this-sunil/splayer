@@ -70,6 +70,7 @@ class FlexiState extends State<Flexi> {
   }
 
   Future<void> listener() async {
+    WakelockPlus.enable();
     if (isControllerFullScreen && !_isFullScreen) {
       _isFullScreen = isControllerFullScreen;
       await _pushFullScreenWidget(context);
@@ -180,10 +181,9 @@ class FlexiState extends State<Flexi> {
     );
 
     onEnterFullScreen();
-
-    if (!widget.controller.allowedScreenSleep) {
+    /*if (!widget.controller.allowedScreenSleep) {
       WakelockPlus.enable();
-    }
+    }*/
 
     await Navigator.of(
       context,
@@ -194,7 +194,7 @@ class FlexiState extends State<Flexi> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    WakelockPlus.disable();
+
 
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,

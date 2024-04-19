@@ -104,6 +104,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
                  customControls: CupertinoControls(tag: tag,backgroundColor: Colors.black, iconColor: Colors.white, playColor: Colors.red),
                  aspectRatio: 16/9,
                  isBrignessOptionDisplay: true,
+                 allowedScreenSleep: false,
                  isVolumnOptionDisplay: true,
                  hideControlsTimer: const Duration(seconds: 3),
                  videoPlayerController: videoPlayerCtr)),

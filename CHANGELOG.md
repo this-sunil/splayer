@@ -38,3 +38,5 @@
 ## 1.0.17
 * Update Player
 
+## 1.0.18
+* Wakelock Enable

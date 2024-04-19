@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -262,14 +261,14 @@ class PodGetXVideoController extends _PodGesturesController {
         playVideo(true);
         break;
       case PodVideoState.paused:
-        if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
+        if (podPlayerConfig.wakelockEnabled) WakelockPlus.enable();
         playVideo(false);
         break;
       case PodVideoState.loading:
         isShowOverlay(true);
         break;
       case PodVideoState.error:
-        if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
+        if (podPlayerConfig.wakelockEnabled) WakelockPlus.enable();
         playVideo(false);
         break;
     }

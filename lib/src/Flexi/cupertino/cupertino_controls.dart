@@ -69,7 +69,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   bool isMuted=false;
   late VideoPlayerController controller;
 
-  Duration varDuration = Duration(milliseconds: 500);
+  Duration varDuration = const Duration(milliseconds: 500);
 
   // We know that _flexiController is set in didChangeDependencies
   FlexiController get flexiController => _flexiController!;
@@ -1412,7 +1412,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               if (podCtr.vimeoOrVideoUrls.isNotEmpty)
-                                _bottomSheetTiles(
+                              /*  _bottomSheetTiles(
                                   title: podCtr.podPlayerLabels.quality,
                                   icon: Icons.video_settings_rounded,
                                   subText: '${podCtr.vimeoPlayingVideoQuality}p',
@@ -1435,7 +1435,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
 
                                   },
-                                ),
+                                ),*/
                               _bottomSheetTiles(
                                 title: podCtr.podPlayerLabels.loopVideo,
                                 icon: Icons.loop_rounded,
@@ -1718,7 +1718,7 @@ class _PlaybackSpeedDialog extends StatelessWidget {
     );
   }
 }
-/*class _VideoPlaybackSelectorMob extends StatelessWidget {
+class _VideoPlaybackSelectorMob extends StatelessWidget {
   final void Function()? onTap;
   final String tag;
 
@@ -1747,7 +1747,7 @@ class _PlaybackSpeedDialog extends StatelessWidget {
       ),
     );
   }
-}*/
+}
 
 /*class _VideoQualitySelectorMob extends StatefulWidget {
   final void Function()? onTap;

@@ -10,7 +10,7 @@ class _MobileOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const overlayColor = Colors.black38;
-    const itemColor = Colors.white;
+   // const itemColor = Colors.white;
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
     return Stack(
       alignment: Alignment.center,
@@ -61,7 +61,7 @@ class _MobileOverlay extends StatelessWidget {
                   child: podCtr.videoTitle ?? const SizedBox(),
                 ),
               ),
-             Padding(
+            /* Padding(
                  padding: EdgeInsets.zero,child:  MaterialIconButton(
                toolTipMesg: podCtr.podPlayerLabels.settings,
                color: itemColor,
@@ -75,7 +75,7 @@ class _MobileOverlay extends StatelessWidget {
                child: const Icon(
                  BootstrapIcons.gear,
                ),
-             )),
+             )),*/
             ],
           ),
         ),
