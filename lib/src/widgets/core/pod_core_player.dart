@@ -27,36 +27,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
   String get tag=>widget.tag;
 
   late PlayerNotifier notifier;
- /* void setBrightness(double value) {
-    // Implement logic to adjust brightness on your platform (Android/iOS)
-    ScreenBrightness().setScreenBrightness(value);
-    print('Brightness set to $value');
-  }*/
 
- /* void setVolume(double value) {
-    // Implement logic to adjust volume on your platform (Android/iOS)
-
-    print('Volume set to $value');
-  }
-  void _handleHorizontalDrag(DragUpdateDetails details) {
-    final mediaQuery = MediaQuery.of(context);
-    final dragWidth = mediaQuery.size.width;
-    final dragPos = details.localPosition.dx;
-
-    // Adjust brightness (left side of the screen)
-    if (dragPos < dragWidth / 3) {
-      _brightness += details.delta.dx / dragWidth;
-      _brightness = _brightness.clamp(0.0, 1.0);
-      setBrightness(_brightness);
-    }
-
-    // Adjust volume (right side of the screen)
-    if (dragPos > 2 * dragWidth / 3) {
-      _volume += details.delta.dx / dragWidth;
-      _volume = _volume.clamp(0.0, 1.0);
-      setVolume(_volume);
-    }
-  }*/
 
   TransformationController transformationController=TransformationController();
 
@@ -77,25 +48,22 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
     return Builder(
       builder: (ctrx) {
 
-        return RawKeyboardListener(
+        return KeyboardListener(
           autofocus: true,
           focusNode:
           (podCtr.isFullScreen ? FocusNode() : podCtr.keyboardFocusWeb) ??
               FocusNode(),
-          onKey: (value) => podCtr.onKeyBoardEvents(
+          onKeyEvent: (value) => podCtr.onKeyBoardEvents(
             event: value,
             appContext: ctrx,
             tag: tag,
           ),
          child: Flexi(
            tag: tag,
-
-
              controller:FlexiController(
                transformationController: transformationController,
                  maxScale: 10,
                  zoomAndPan: true,
-
                  looping: podCtr.podPlayerConfig.isLooping,
                  autoPlay: podCtr.podPlayerConfig.autoPlay,
                  isLive:podCtr.podPlayerConfig.isLive,

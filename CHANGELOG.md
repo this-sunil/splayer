@@ -40,3 +40,6 @@
 
 ## 1.0.18
 * Wakelock Enable
+
+## 1.0.19
+* Attractive Video

@@ -62,7 +62,6 @@ class PodGetXVideoController extends _PodGesturesController {
       await setLooping(isLooping);
       _videoCtr?.addListener(videoListner);
       addListenerId('podVideoState', podStateListner);
-
       checkAutoPlayVideo();
       controllerInitialized = true;
       update();
@@ -202,32 +201,32 @@ class PodGetXVideoController extends _PodGesturesController {
 
   ///Listning on keyboard events
   void onKeyBoardEvents({
-    required RawKeyEvent event,
+    required KeyEvent event,
     required BuildContext appContext,
     required String tag,
   }) {
     if (kIsWeb) {
-      if (event.isKeyPressed(LogicalKeyboardKey.space)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.space)) {
         togglePlayPauseVideo();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyM)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.keyM)) {
         toggleMute();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.arrowLeft)) {
         onLeftDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.arrowRight)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.arrowRight)) {
         onRightDoubleTap();
         return;
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.keyF) &&
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.keyF) &&
           event.logicalKey.keyLabel == 'F') {
         toggleFullScreenOnWeb(appContext, tag);
       }
-      if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
         if (isFullScreen) {
           uni_html.document.exitFullscreen();
           if (!isWebPopupOverlayOpen) {

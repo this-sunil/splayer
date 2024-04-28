@@ -267,10 +267,8 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
       );
     } else {
       return 
-          
-          _PodCoreVideoPlayer(
-
-        videoPlayerCtr: _podCtr.videoCtr!,
+        _PodCoreVideoPlayer(
+          videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,
       );

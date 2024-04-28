@@ -1,4 +1,3 @@
-
 import 'package:flutter/services.dart';
 import 'package:splayer/src/Flexi/flexi_player.dart';
 import 'package:splayer/src/Flexi/helpers/adaptive_controls.dart';
@@ -15,9 +14,6 @@ double calculateAspectRatio(BuildContext context) {
 
   return width > height ? width / height : height / width;
 }
-
-
-
 
 class PlayerWithControls extends StatelessWidget {
   final String tag;
@@ -58,11 +54,9 @@ class PlayerWithControls extends StatelessWidget {
             scale=prevScale*details.scale;
               print("Scale Update $scale");
               scale=scale.clamp(1.0, 10.0);
-              flexiController.transformationController!.value=Matrix4.identity()..scale(scale,scale,scale);
+              flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
               },
           child:Stack(
-            fit: StackFit.expand,
-
             children: <Widget>[
 
               InteractiveViewer(
@@ -116,7 +110,8 @@ class PlayerWithControls extends StatelessWidget {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Center(
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
               color: Colors.black,
               height: constraints.maxHeight,
               width: constraints.maxWidth,

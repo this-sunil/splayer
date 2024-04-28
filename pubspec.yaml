@@ -1,6 +1,6 @@
 name: splayer
 description: "Vimeo and youtube player for flutter, Pod player provides customizable video player controls that support android, ios and web."
-version: 1.0.18
+version: 1.0.19
 homepage: https://github.com/this-sunil/splayer.git
 
 environment:
@@ -22,6 +22,7 @@ dependencies:
   provider: ^6.1.2
   volume_controller: ^2.0.7
   bootstrap_icons: ^1.11.3
+  smooth_video_progress: ^0.0.4
 
 
 

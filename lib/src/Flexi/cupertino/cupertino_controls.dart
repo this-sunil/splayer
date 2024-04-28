@@ -1,16 +1,16 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
+
 
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 
 import 'package:get/get.dart';
+import 'package:smooth_video_progress/smooth_video_progress.dart';
 
 import 'package:splayer/src/Flexi/animated_play_pause.dart';
 import 'package:splayer/src/Flexi/center_play_button.dart';
 import 'package:splayer/src/Flexi/flexi_player.dart';
-import 'package:splayer/src/Flexi/flexi_progress_colors.dart';
-import 'package:splayer/src/Flexi/cupertino/cupertino_progress_bar.dart';
 import 'package:splayer/src/Flexi/cupertino/widgets/cupertino_options_dialog.dart';
 import 'package:splayer/src/Flexi/helpers/utils.dart';
 import 'package:splayer/src/Flexi/models/option_item.dart';
@@ -22,7 +22,6 @@ import 'package:provider/provider.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
-
 import '../../controllers/pod_getx_video_controller.dart';
 
 
@@ -61,7 +60,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   final marginSize = 5.0;
   Timer? _expandCollapseTimer;
   Timer? _initTimer;
-  bool _dragging = false;
+  bool dragging = false;
   Duration? _subtitlesPosition;
   bool _subtitleOn = false;
   Timer? _bufferingDisplayTimer;
@@ -126,7 +125,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     );
   }
-  Widget _VideoQualitySelectorMob({void Function()? onTap,
+  Widget videoQualitySelectorMob({void Function()? onTap,
    FlexiController? controllers,
   required String tag}){
     return GetBuilder<PodGetXVideoController>(
@@ -143,7 +142,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
              onTap != null ? onTap() : Navigator.of(context).pop();
 
               
-              podCtr.changeVideoQuality(e.quality).then((value) => print("Quality ${e.quality} & Change video Url=>"+podCtr.videoCtr!.dataSource.toString()));
+              podCtr.changeVideoQuality(e.quality).then((value) => log("Quality ${e.quality} & Change video Url=>${podCtr.videoCtr!.dataSource}"));
              playPause();
 
 
@@ -155,7 +154,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     ));
   }
-  Widget _VideoPlaybackSelectorMob({void Function()? onTap,
+  Widget videoPlaybackSelectorMob({void Function()? onTap,
    required String tag}){
     return GetBuilder<PodGetXVideoController>(
         tag: tag,
@@ -201,7 +200,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                       showModalBottomSheet<void>(
                         context: context,
                         builder: (context) => SafeArea(
-                          child: _VideoQualitySelectorMob(
+                          child: videoQualitySelectorMob(
                             tag: tag,
                             controllers: controllers,
                             onTap: null,
@@ -236,7 +235,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                     context: context,
                     semanticsDismissible: true,
                     useRootNavigator: flexiController.useRootNavigator,
-                    builder: (context) => _PlaybackSpeedDialog(
+                    builder: (context) => PlaybackSpeedDialog(
                       speeds: flexiController.playbackSpeeds,
                       selected: _latestValue.playbackSpeed,
                     ),
@@ -343,8 +342,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final backgroundColor = widget.backgroundColor;
     final iconColor = widget.iconColor;
     final orientation = MediaQuery.of(context).orientation;
-    final barHeight = orientation == Orientation.portrait ? 30.0 : 50.0;
-    final buttonPadding = orientation == Orientation.portrait ? 16.0 : 24.0;
+    final barHeight = orientation == Orientation.portrait ? 50.0 : 50.0;
+    final buttonPadding = orientation == Orientation.portrait ? 24.0 : 24.0;
 
     return MouseRegion(
       onHover: (_) => _cancelAndRestartTimer(),
@@ -370,7 +369,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                         Center(
                           child:
                           _displayBufferingIndicator ?
-                          CircularProgressIndicator(
+                          const CircularProgressIndicator(
                             strokeWidth: 2,
                             color: Colors.white,
                           )
@@ -574,7 +573,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     super.didChangeDependencies();
   }
 
-  GestureDetector _buildOptionsButton(
+  GestureDetector buildOptionsButton(
     Color iconColor,
     double barHeight,
   ) {
@@ -685,54 +684,48 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10.0),
-            child: BackdropFilter(
-              filter: ui.ImageFilter.blur(
-                sigmaX: 10.0,
-                sigmaY: 10.0,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                height: flexiController.isFullScreen?barHeight:40,
-                color: backgroundColor,
-                child: flexiController.isLive
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
+            child: Container(
+              color: Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              height: flexiController.isFullScreen?barHeight:40,
+              child: flexiController.isLive
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
 
-                          _buildPosition(iconColor),
-                          _buildProgressBar(),
-                          _buildRemaining(iconColor),
-                         /* _buildSubtitleToggle(iconColor, barHeight),*/
-                          _buildLive(Colors.red),
-                          _buildExpandButton(iconColor, barHeight),
+                  _buildPosition(iconColor),
+                  _buildProgressBar(),
+                  _buildRemaining(iconColor),
+                  /* _buildSubtitleToggle(iconColor, barHeight),*/
+                  _buildLive(Colors.red),
+                  _buildExpandButton(iconColor, barHeight),
 
-                        ],
-                      )
-                    : Row(
-                        children: <Widget>[
+                ],
+              )
+                  : Row(
+                children: <Widget>[
 
-                         // _buildSkipBack(iconColor, barHeight),
-                          //_buildPlayPause(controller, iconColor, barHeight),
-                         // _buildSkipForward(iconColor, barHeight),
-                          
+                  // _buildSkipBack(iconColor, barHeight),
+                  //_buildPlayPause(controller, iconColor, barHeight),
+                  // _buildSkipForward(iconColor, barHeight),
 
-                          _buildPosition(iconColor),
-                          _buildProgressBar(),
-                          _buildRemaining(iconColor),
-                          _buildSubtitleToggle(iconColor, barHeight),
 
-                         /* if (flexiController.allowPlaybackSpeedChanging)
+                  _buildPosition(iconColor),
+                  _buildProgressBar(),
+                  _buildRemaining(iconColor),
+                  _buildSubtitleToggle(iconColor, barHeight),
+
+                  /* if (flexiController.allowPlaybackSpeedChanging)
                             _buildSpeedButton(controller, iconColor, barHeight),*/
 
-                          // if (flexiController.additionalOptions != null &&
-                          //     flexiController
-                          //         .additionalOptions!(context).isNotEmpty)
-                          //   _buildOptionsButton(iconColor, barHeight),
+                  // if (flexiController.additionalOptions != null &&
+                  //     flexiController
+                  //         .additionalOptions!(context).isNotEmpty)
+                  //   _buildOptionsButton(iconColor, barHeight),
 
-                          _buildExpandButton(iconColor, barHeight),
+                  _buildExpandButton(iconColor, barHeight),
 
-                        ],
-                      ),
+                ],
               ),
             ),
           ),
@@ -820,8 +813,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
       double barHeight,
       double buttonPadding,
       ) {
-    return InkWell(
-      onTap: (){
+    return IconButton(
+      onPressed: (){
 
         _onExpandCollapse();
 
@@ -843,32 +836,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
     }
           */
       },
-      child: Padding(
-        padding: EdgeInsets.only(left: 10),
+      icon: Padding(
+        padding: const EdgeInsets.only(left: 10),
         child:AnimatedOpacity(
           opacity: notifier.hideStuff ? 0.0 : 1.0,
           duration: varDuration,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: BackdropFilter(
-              filter: ui.ImageFilter.blur(  sigmaX: 10.0,
-                sigmaY: 10.0,),
-              child: Container(
-                height: barHeight,
-                padding: EdgeInsets.only(
-                  left: 15,//buttonPadding,
-                  right: 15,//buttonPadding,
-                ),
-                color: backgroundColor,
-                child: Center(
-                  child: Icon(
-                    CupertinoIcons.back,
-                    color: iconColor,
-                    size: 16,
-                  ),
-                ),
-              ),
-            ),
+          child: Icon(
+            Icons.keyboard_arrow_left,
+            color: iconColor,
           ),
         ),
       )
@@ -879,7 +854,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
     final bool isFinished = _latestValue.position >= _latestValue.duration;
     final bool showPlayButton =
-        widget.showPlayButton && !_latestValue.isPlaying && !_dragging;
+        widget.showPlayButton && !_latestValue.isPlaying && ! dragging;
 
     return
       AnimatedOpacity(
@@ -903,8 +878,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
           //device brightness
           _flexiController!.isBrignessOptionDisplay && _flexiController!.isFullScreen ?
-          Container(
-           height: (varDeviceWidth - (barHeight)) > 300.0 ? 300.0 : (varDeviceWidth - (barHeight)),
+          AnimatedContainer(
+            duration: const Duration(seconds: 1),
+            height: 200,
+            width: 100,
             //(MediaQuery.of(context).orientation) == Orientation.portrait ? 50.0 : 47.0,
            //padding: _flexiController!.isFullScreen  && !isPhone ? EdgeInsets.only(top: 50,bottom: 50) : EdgeInsets.zero,
             child:Column(
@@ -933,18 +910,18 @@ class _CupertinoControlsState extends State<CupertinoControls>
                                 }
 
                                 return  SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                      trackHeight: 3,
+                                      thumbColor: Colors.pink,
+                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
                                   child: Slider(
                                     value: changedBrightness,
-                                    activeColor: Colors.white,
+                                    activeColor: Colors.pink,
                                     inactiveColor: widget.iconColor,
                                     onChanged: (value) {
                                       setBrightness(value);
                                     },
                                   ),
-                                  data: SliderTheme.of(context).copyWith(
-                                      trackHeight: 3,
-                                      thumbColor: Colors.transparent,
-                                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
                                 );
                                 //   Column(
                                 //   mainAxisSize: MainAxisSize.min,
@@ -995,12 +972,11 @@ class _CupertinoControlsState extends State<CupertinoControls>
                 )
               ],
             )
-          ) : SizedBox(),
+          ) : const SizedBox(),
 
           _buildSkipBack(widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
-
           CenterPlayButton(
-            backgroundColor:widget.playColor,
+            backgroundColor:const Color(0xFFFF0000),
             iconColor: widget.iconColor,
             isFinished: isFinished,
             isPlaying: controller.value.isPlaying,
@@ -1012,8 +988,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
           //device volumn
           _flexiController!.isVolumnOptionDisplay && _flexiController!.isFullScreen  ?
-          Container(
-              height: (varDeviceWidth - (barHeight)) > 300.0 ? 300.0 : (varDeviceWidth - (barHeight)),
+          AnimatedContainer(
+            duration: const Duration(seconds: 1),
+              height: 200,
+              width: 100,
             // height: (MediaQuery.of(context).orientation) == Orientation.portrait ? 50.0 : 47.0,
               //padding: _flexiController!.isFullScreen && !isPhone ? EdgeInsets.only(top: (MediaQuery.of(context).size.width/6),bottom: (MediaQuery.of(context).size.width/6)) : EdgeInsets.zero,
               child:Column(
@@ -1032,13 +1010,12 @@ class _CupertinoControlsState extends State<CupertinoControls>
                         child: SliderTheme(
                           data: SliderTheme.of(context).copyWith(
                               trackHeight: 3,
-                              thumbColor: Colors.transparent,
-                              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
+                              thumbColor: Colors.pink,
+                              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
                           child: Slider(
-
                             max: 1,
                             min: 0,
-                            activeColor: Colors.white,
+                            activeColor: Colors.pink,
                             inactiveColor: widget.iconColor,
                             onChanged: (double value) {
                               setState(() {
@@ -1053,7 +1030,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   )
                 ],
               )
-          ) : SizedBox(),
+          ) : const SizedBox(),
         ],
       )
 
@@ -1106,7 +1083,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       );
   }
 
-  GestureDetector buildMuteButton(
+  IconButton buildMuteButton(
     VideoPlayerController controller,
     Color backgroundColor,
     Color iconColor,
@@ -1115,8 +1092,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
   ) {
     return
 
-      GestureDetector(
-      onTap: () {
+      IconButton(
+      onPressed: () {
         _cancelAndRestartTimer();
 
         if (_latestValue.volume == 0) {
@@ -1126,35 +1103,22 @@ class _CupertinoControlsState extends State<CupertinoControls>
           controller.setVolume(0.0);
         }
       },
-      child:  AnimatedOpacity(
+      icon:  AnimatedOpacity(
         opacity: notifier.hideStuff ? 0.0 : 1.0,
         duration: varDuration,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 10.0),
-            child: ColoredBox(
-              color: backgroundColor,
-              child: Container(
-                height: barHeight,
-                padding: EdgeInsets.only(
-                  left: buttonPadding,
-                  right: buttonPadding,
-                ),
-                child: Icon(
-                  _latestValue.volume > 0 ? Icons.volume_up : Icons.volume_off,
-                  color: iconColor,
-                  size: 16,
-                ),
-              ),
-            ),
+          child: Icon(
+            _latestValue.volume > 0 ? Icons.volume_up : Icons.volume_off,
+            color: iconColor,
+
           ),
         ),
       ),
     );
   }
 
-  GestureDetector _buildPlayPause(
+  GestureDetector buildPlayPause(
     VideoPlayerController controller,
     Color iconColor,
     double barHeight,
@@ -1180,7 +1144,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final position = _latestValue.position;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: const EdgeInsets.only(left: 20.0),
       child: Text(
         formatDuration(position),
         style: TextStyle(
@@ -1195,7 +1159,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final position = _latestValue.duration - _latestValue.position;
 
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: const EdgeInsets.only(right: 10.0),
       child: Text(
         '-${formatDuration(position)}',
         style: TextStyle(color: iconColor, fontSize: 12.0),
@@ -1275,7 +1239,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
     );
   }
 
-  GestureDetector _buildSpeedButton(
+  GestureDetector buildSpeedButton(
     VideoPlayerController controller,
     Color iconColor,
     double barHeight,
@@ -1288,7 +1252,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
           context: context,
           semanticsDismissible: true,
           useRootNavigator: flexiController.useRootNavigator,
-          builder: (context) => _PlaybackSpeedDialog(
+          builder: (context) => PlaybackSpeedDialog(
             speeds: flexiController.playbackSpeeds,
             selected: _latestValue.playbackSpeed,
           ),
@@ -1333,8 +1297,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
     double barHeight,
     double buttonPadding,
   ) {
-    return Container(
-      height: barHeight,
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+
       margin: EdgeInsets.only(
         top: marginSize,
         right: marginSize,
@@ -1387,32 +1352,22 @@ class _CupertinoControlsState extends State<CupertinoControls>
               barHeight,
               buttonPadding,
             ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           AnimatedOpacity(
             opacity: notifier.hideStuff ? 0.0 : 1.0,
             duration: varDuration,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 10.0),
-                child: ColoredBox(
-                  color: backgroundColor,
-                  child: Container(
-                    height: barHeight,
-                    padding: EdgeInsets.only(
-                      left: buttonPadding,
-                      right: buttonPadding,
-                    ),
-                    child:GestureDetector(onTap: () async{
-                      showModalBottomSheet<void>(
-                        context: context,
-                        builder: (context) => SafeArea(child: GetBuilder<PodGetXVideoController>(
-                          tag: widget.tag,
-                          builder: (podCtr) => Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (podCtr.vimeoOrVideoUrls.isNotEmpty)
-                              /*  _bottomSheetTiles(
+              child: IconButton(onPressed: () async{
+                showModalBottomSheet<void>(
+                  context: context,
+                  builder: (context) => SafeArea(child: GetBuilder<PodGetXVideoController>(
+                    tag: widget.tag,
+                    builder: (podCtr) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (podCtr.vimeoOrVideoUrls.isNotEmpty)
+                        /*  _bottomSheetTiles(
                                   title: podCtr.podPlayerLabels.quality,
                                   icon: Icons.video_settings_rounded,
                                   subText: '${podCtr.vimeoPlayingVideoQuality}p',
@@ -1436,55 +1391,52 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
                                   },
                                 ),*/
-                              _bottomSheetTiles(
-                                title: podCtr.podPlayerLabels.loopVideo,
-                                icon: Icons.loop_rounded,
-                                subText: podCtr.isLooping
-                                    ? podCtr.podPlayerLabels.optionEnabled
-                                    : podCtr.podPlayerLabels.optionDisabled,
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                  podCtr.toggleLooping();
-                                },
-                              ),
-                              _bottomSheetTiles(
-                                title: podCtr.podPlayerLabels.playbackSpeed,
-                                icon: Icons.slow_motion_video_rounded,
-                                subText: latestValue!.playbackSpeed.toString(),
-                                onTap: () async {
-                                  Navigator.pop(context);
-                                  _hideTimer?.cancel();
-
-                                  final chosenSpeed = await showCupertinoModalPopup<double>(
-                                    context: context,
-                                    semanticsDismissible: true,
-                                    useRootNavigator: flexiController.useRootNavigator,
-                                    builder: (context) => _PlaybackSpeedDialog(
-                                      speeds: flexiController.playbackSpeeds,
-                                      selected: _latestValue.playbackSpeed,
-                                    ),
-                                  );
-
-                                  if (chosenSpeed != null) {
-                                    controller.setPlaybackSpeed(chosenSpeed);
-                                  }
-
-                                  if (_latestValue.isPlaying) {
-                                    _startHideTimer();
-                                  }
-                                },
-                              ),
-                            ],
+                          _bottomSheetTiles(
+                            title: podCtr.podPlayerLabels.loopVideo,
+                            icon: Icons.loop_rounded,
+                            subText: podCtr.isLooping
+                                ? podCtr.podPlayerLabels.optionEnabled
+                                : podCtr.podPlayerLabels.optionDisabled,
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              podCtr.toggleLooping();
+                            },
                           ),
-                        )),
-                      );
-                    }, child:  Icon(BootstrapIcons.gear,color: widget.iconColor,size:16)),
-                  ),
-                ),
-              ),
+                        _bottomSheetTiles(
+                          title: podCtr.podPlayerLabels.playbackSpeed,
+                          icon: Icons.slow_motion_video_rounded,
+                          subText: latestValue!.playbackSpeed.toString(),
+                          onTap: () async {
+                            Navigator.pop(context);
+                            _hideTimer?.cancel();
+
+                            final chosenSpeed = await showCupertinoModalPopup<double>(
+                              context: context,
+                              semanticsDismissible: true,
+                              useRootNavigator: flexiController.useRootNavigator,
+                              builder: (context) => PlaybackSpeedDialog(
+                                speeds: flexiController.playbackSpeeds,
+                                selected: _latestValue.playbackSpeed,
+                              ),
+                            );
+
+                            if (chosenSpeed != null) {
+                              controller.setPlaybackSpeed(chosenSpeed);
+                            }
+
+                            if (_latestValue.isPlaying) {
+                              _startHideTimer();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
+                );
+              }, icon:  Icon(BootstrapIcons.gear,color: widget.iconColor)),
             ),
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           //mute button - old position
 
         ],
@@ -1538,51 +1490,37 @@ class _CupertinoControlsState extends State<CupertinoControls>
   Widget _buildProgressBar() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(right: 12.0),
-        child: CupertinoVideoProgressBar(
-          controller,
-          onDragStart: () {
-            setState(() {
-              _dragging = true;
-            });
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: SmoothVideoProgress(
+          controller: controller,
+          builder: (context, position, duration, child) => SliderTheme(data: SliderTheme.of(context).copyWith(
+              trackHeight: 3,
+              thumbColor: Colors.pink,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)), child: Slider(
+            activeColor: Colors.pink,
+            onChangeStart: (_) {
+              controller.pause();
 
-            _hideTimer?.cancel();
-          },
-          onDragEnd: () {
-            setState(() {
-              _dragging = false;
-            });
-
-            _startHideTimer();
-          },
-
-          colors: flexiController.cupertinoProgressColors ??
-              FlexiProgressColors(
-                playedColor: const Color.fromARGB(
-                  120,
-                  255,
-                  255,
-                  255,
-                ),
-                handleColor: const Color.fromARGB(
-                  255,
-                  255,
-                  255,
-                  255,
-                ),
-                bufferedColor: const Color.fromARGB(
-                  60,
-                  255,
-                  255,
-                  255,
-                ),
-                backgroundColor: const Color.fromARGB(
-                  20,
-                  255,
-                  255,
-                  255,
-                ),
-              ),
+              Future.delayed(const Duration(seconds: 1),(){
+                setState(() {
+                  dragging=true;
+                });
+              });
+            },
+            onChangeEnd: (_) {
+              controller.play();
+              Future.delayed(const Duration(seconds: 1),(){
+                setState(() {
+                  dragging=false;
+                });
+              });
+            },
+            onChanged: (value) =>
+                controller.seekTo(Duration(milliseconds: value.toInt())),
+            value: position.inMilliseconds.toDouble(),
+            min: 0,
+            max: duration.inMilliseconds.toDouble(),
+          )),
         ),
       ),
     );
@@ -1674,21 +1612,20 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 }
 
-class _PlaybackSpeedDialog extends StatelessWidget {
-  const _PlaybackSpeedDialog({
-    Key? key,
+class PlaybackSpeedDialog extends StatelessWidget {
+  const PlaybackSpeedDialog({
+    super.key,
     required List<double> speeds,
     required double selected,
   })  : _speeds = speeds,
-        _selected = selected,
-        super(key: key);
+        _selected = selected;
 
   final List<double> _speeds;
   final double _selected;
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = Colors.black;//CupertinoTheme.of(context).primaryColor;
+    const selectedColor = Colors.black;//CupertinoTheme.of(context).primaryColor;
 
     return CupertinoActionSheet(
       actions: _speeds
@@ -1698,14 +1635,14 @@ class _PlaybackSpeedDialog extends StatelessWidget {
                 Navigator.of(context).pop(e);
               },
               child: Padding(
-                padding: EdgeInsets.only(left: 15,right: 15),
+                padding: const EdgeInsets.only(left: 15,right: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // if (e == _selected)
 
 
-                    Expanded(child: Text(e.toString(),style: TextStyle(color:selectedColor),textAlign: TextAlign.start)),
+                    Expanded(child: Text(e.toString(),style: const TextStyle(color:selectedColor),textAlign: TextAlign.start)),
                     const SizedBox(width: 15),
                     Icon(Icons.check, size: 20.0, color: e == _selected ? selectedColor : Colors.transparent),
 
@@ -1718,14 +1655,14 @@ class _PlaybackSpeedDialog extends StatelessWidget {
     );
   }
 }
-class _VideoPlaybackSelectorMob extends StatelessWidget {
+class VideoPlaybackSelectorMob extends StatelessWidget {
   final void Function()? onTap;
   final String tag;
 
-  const _VideoPlaybackSelectorMob({
+  const VideoPlaybackSelectorMob({Key? key,
     required this.onTap,
     required this.tag,
-  });
+  }):super(key: key);
 
   @override
   Widget build(BuildContext context) {

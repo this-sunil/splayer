@@ -73,8 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
   
     return Scaffold(
-     
-      body:SafeArea(child: Column(
+        body:SafeArea(child: Column(
         children: [
           SizedBox(
               height: 250,
