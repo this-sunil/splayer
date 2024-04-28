@@ -46,3 +46,6 @@
 
 ## 1.0.20
 * Lock Video
+ 
+## 1.0.21
+* Fix Bugs

@@ -334,9 +334,9 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
     final buttonPadding = orientation == Orientation.portrait ? 24.0 : 24.0;
 
     return MouseRegion(
-      onHover: (_) => isLocked ? () {} : _cancelAndRestartTimer(),
+      onHover: (_) => _cancelAndRestartTimer(),
       child: GestureDetector(
-        onTap: () => isLocked ? () {} : _cancelAndRestartTimer(),
+        onTap: () => _cancelAndRestartTimer(),
         child: Stack(
           children: [
             Positioned.fill(
@@ -951,25 +951,12 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
   ) {
     return IconButton(
         onPressed: () {
-          _onExpandCollapse();
-
-          // _flexiController!.exitFullScreen();
-          // Navigator.of(
-          //   context,
-          //   rootNavigator: _flexiController!.useRootNavigator,
-          // ).pop();
-          //  Navigator.pop(context);
-
-          /*
-         if (_isFullScreen) {
-      Wakelock.disable();
-      _navigatorState.maybePop();
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: _betterPlayerConfiguration.systemOverlaysAfterFullScreen);
-      SystemChrome.setPreferredOrientations(
-          _betterPlayerConfiguration.deviceOrientationsAfterFullScreen);
-    }
-          */
+          if(flexiController.isFullScreen){
+            _onExpandCollapse();
+          }
+          else{
+            Navigator.pop(context);
+          }
         },
         icon: Padding(
           padding: const EdgeInsets.only(left: 10),
