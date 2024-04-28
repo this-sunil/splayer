@@ -43,3 +43,6 @@
 
 ## 1.0.19
 * Attractive Video
+
+## 1.0.20
+* Lock Video

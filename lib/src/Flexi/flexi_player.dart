@@ -104,9 +104,8 @@ class FlexiState extends State<Flexi> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
-        alignment: Alignment.center,
-        color: Colors.black,
+      body: AnimatedSwitcher(
+        duration: const Duration(seconds: 1),
         child: controllerProvider,
       ),
     );

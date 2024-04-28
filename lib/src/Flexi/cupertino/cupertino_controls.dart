@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:math' as math;
 
-
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 
 import 'package:get/get.dart';
@@ -24,9 +23,6 @@ import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../controllers/pod_getx_video_controller.dart';
 
-
-
-
 class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
     required this.backgroundColor,
@@ -43,16 +39,13 @@ class CupertinoControls extends StatefulWidget {
   final bool showPlayButton;
   final String tag;
 
-
-
   @override
   State<StatefulWidget> createState() {
     return _CupertinoControlsState();
   }
 }
 
-class _CupertinoControlsState extends State<CupertinoControls>
-    with SingleTickerProviderStateMixin {
+class _CupertinoControlsState extends State<CupertinoControls> with SingleTickerProviderStateMixin {
   late PlayerNotifier notifier;
   late VideoPlayerValue _latestValue;
   double? _latestVolume;
@@ -65,9 +58,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
   bool _subtitleOn = false;
   Timer? _bufferingDisplayTimer;
   bool _displayBufferingIndicator = false;
-  bool isMuted=false;
+  bool isMuted = false;
   late VideoPlayerController controller;
-
+  bool isLocked = true;
   Duration varDuration = const Duration(milliseconds: 500);
 
   // We know that _flexiController is set in didChangeDependencies
@@ -125,137 +118,134 @@ class _CupertinoControlsState extends State<CupertinoControls>
       ),
     );
   }
-  Widget videoQualitySelectorMob({void Function()? onTap,
-   FlexiController? controllers,
-  required String tag}){
+
+  Widget videoQualitySelectorMob({void Function()? onTap, FlexiController? controllers, required String tag}) {
     return GetBuilder<PodGetXVideoController>(
         tag: tag,
-        builder: (podCtr)=>SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: podCtr.vimeoOrVideoUrls
-            .map(
-              (e) => ListTile(
-            title: Text('${e.quality}p'),
-            trailing: Icon(Icons.check,color: podCtr.vimeoPlayingVideoQuality==e.quality?Colors.black:Colors.transparent),
-            onTap: () {
-             onTap != null ? onTap() : Navigator.of(context).pop();
+        builder: (podCtr) => SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: podCtr.vimeoOrVideoUrls
+                    .map(
+                      (e) => ListTile(
+                        title: Text('${e.quality}p'),
+                        trailing: Icon(Icons.check,
+                            color: podCtr.vimeoPlayingVideoQuality == e.quality ? Colors.black : Colors.transparent),
+                        onTap: () {
+                          onTap != null ? onTap() : Navigator.of(context).pop();
 
-              
-              podCtr.changeVideoQuality(e.quality).then((value) => log("Quality ${e.quality} & Change video Url=>${podCtr.videoCtr!.dataSource}"));
-             playPause();
-
-
-
-            },
-          ),
-        )
-            .toList(),
-      ),
-    ));
+                          podCtr.changeVideoQuality(e.quality).then((value) =>
+                              log("Quality ${e.quality} & Change video Url=>${podCtr.videoCtr!.dataSource}"));
+                          playPause();
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ));
   }
-  Widget videoPlaybackSelectorMob({void Function()? onTap,
-   required String tag}){
+
+  Widget videoPlaybackSelectorMob({void Function()? onTap, required String tag}) {
     return GetBuilder<PodGetXVideoController>(
         tag: tag,
-        builder:(podCtr)=>SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: podCtr.videoPlaybackSpeeds
-            .map(
-              (e) => ListTile(
-            title: Text(e),
-            onTap: () {
-              onTap != null ? onTap() : Navigator.of(context).pop();
+        builder: (podCtr) => SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: podCtr.videoPlaybackSpeeds
+                    .map(
+                      (e) => ListTile(
+                        title: Text(e),
+                        onTap: () {
+                          onTap != null ? onTap() : Navigator.of(context).pop();
 
-              podCtr.setVideoPlayBack(e);
-
-
-            },
-          ),
-        )
-            .toList(),
-      ),
-    ));
+                          podCtr.setVideoPlayBack(e);
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ));
   }
-  Widget settingWidget(String tag,FlexiController controllers){
-    return GestureDetector(onTap: () async{
-      showModalBottomSheet<void>(
-        context: context,
-        builder: (context) => SafeArea(child: GetBuilder<PodGetXVideoController>(
-          tag: tag,
-          builder: (podCtr) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (podCtr.vimeoOrVideoUrls.isNotEmpty)
-                _bottomSheetTiles(
-                  title: podCtr.podPlayerLabels.quality,
-                  icon: Icons.video_settings_rounded,
-                  subText: '${podCtr.vimeoPlayingVideoQuality}p',
-                  onTap: () async{
-                    Navigator.of(context).pop();
-                    podCtr.videoCtr!.pause();
-                    controller.pause();
-                    Timer(const Duration(milliseconds: 100), () {
-                      showModalBottomSheet<void>(
+
+  Widget settingWidget(String tag, FlexiController controllers) {
+    return GestureDetector(
+        onTap: () async {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (context) => SafeArea(
+                child: GetBuilder<PodGetXVideoController>(
+              tag: tag,
+              builder: (podCtr) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (podCtr.vimeoOrVideoUrls.isNotEmpty)
+                    _bottomSheetTiles(
+                      title: podCtr.podPlayerLabels.quality,
+                      icon: Icons.video_settings_rounded,
+                      subText: '${podCtr.vimeoPlayingVideoQuality}p',
+                      onTap: () async {
+                        Navigator.of(context).pop();
+                        podCtr.videoCtr!.pause();
+                        controller.pause();
+                        Timer(const Duration(milliseconds: 100), () {
+                          showModalBottomSheet<void>(
+                            context: context,
+                            builder: (context) => SafeArea(
+                              child: videoQualitySelectorMob(
+                                tag: tag,
+                                controllers: controllers,
+                                onTap: null,
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                    ),
+                  _bottomSheetTiles(
+                    title: podCtr.podPlayerLabels.loopVideo,
+                    icon: Icons.loop_rounded,
+                    subText:
+                        podCtr.isLooping ? podCtr.podPlayerLabels.optionEnabled : podCtr.podPlayerLabels.optionDisabled,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      podCtr.toggleLooping();
+                    },
+                  ),
+                  _bottomSheetTiles(
+                    title: podCtr.podPlayerLabels.playbackSpeed,
+                    icon: Icons.slow_motion_video_rounded,
+                    subText: latestValue!.playbackSpeed.toString(),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      _hideTimer?.cancel();
+
+                      final chosenSpeed = await showCupertinoModalPopup<double>(
                         context: context,
-                        builder: (context) => SafeArea(
-                          child: videoQualitySelectorMob(
-                            tag: tag,
-                            controllers: controllers,
-                            onTap: null,
-                          ),
+                        semanticsDismissible: true,
+                        useRootNavigator: flexiController.useRootNavigator,
+                        builder: (context) => PlaybackSpeedDialog(
+                          speeds: flexiController.playbackSpeeds,
+                          selected: _latestValue.playbackSpeed,
                         ),
                       );
-                    });
 
+                      if (chosenSpeed != null) {
+                        controller.setPlaybackSpeed(chosenSpeed);
+                      }
 
-                  },
-                ),
-              _bottomSheetTiles(
-                title: podCtr.podPlayerLabels.loopVideo,
-                icon: Icons.loop_rounded,
-                subText: podCtr.isLooping
-                    ? podCtr.podPlayerLabels.optionEnabled
-                    : podCtr.podPlayerLabels.optionDisabled,
-                onTap: () {
-                  Navigator.of(context).pop();
-                  podCtr.toggleLooping();
-                },
+                      if (_latestValue.isPlaying) {
+                        _startHideTimer();
+                      }
+                    },
+                  ),
+                ],
               ),
-              _bottomSheetTiles(
-                title: podCtr.podPlayerLabels.playbackSpeed,
-                icon: Icons.slow_motion_video_rounded,
-                subText: latestValue!.playbackSpeed.toString(),
-                onTap: () async {
-                  Navigator.pop(context);
-                  _hideTimer?.cancel();
-
-                  final chosenSpeed = await showCupertinoModalPopup<double>(
-                    context: context,
-                    semanticsDismissible: true,
-                    useRootNavigator: flexiController.useRootNavigator,
-                    builder: (context) => PlaybackSpeedDialog(
-                      speeds: flexiController.playbackSpeeds,
-                      selected: _latestValue.playbackSpeed,
-                    ),
-                  );
-
-                  if (chosenSpeed != null) {
-                    controller.setPlaybackSpeed(chosenSpeed);
-                  }
-
-                  if (_latestValue.isPlaying) {
-                    _startHideTimer();
-                  }
-                },
-              ),
-            ],
-          ),
-        )),
-      );
-    }, child:  Icon(BootstrapIcons.gear,color: widget.iconColor));
+            )),
+          );
+        },
+        child: Icon(BootstrapIcons.gear, color: widget.iconColor));
   }
+
   @override
   void initState() {
     super.initState();
@@ -281,19 +271,17 @@ class _CupertinoControlsState extends State<CupertinoControls>
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     varDeviceWidth = MediaQuery.of(context).size.shortestSide;
     isPhone = MediaQuery.of(context).size.shortestSide < 700 ? true : false;
 
     if (_latestValue.hasError) {
       // print("_latestValue : ${_latestValue.hasError}");
       return flexiController.errorBuilder?.call(
-        context,
-        flexiController.videoPlayerController.value.errorDescription!,
-      ) ??
+            context,
+            flexiController.videoPlayerController.value.errorDescription!,
+          ) ??
           const Center(
             child: Icon(
               Icons.error,
@@ -346,52 +334,43 @@ class _CupertinoControlsState extends State<CupertinoControls>
     final buttonPadding = orientation == Orientation.portrait ? 24.0 : 24.0;
 
     return MouseRegion(
-      onHover: (_) => _cancelAndRestartTimer(),
+      onHover: (_) => isLocked ? () {} : _cancelAndRestartTimer(),
       child: GestureDetector(
-        onTap: () => _cancelAndRestartTimer(),
+        onTap: () => isLocked ? () {} : _cancelAndRestartTimer(),
         child: Stack(
           children: [
-
             Positioned.fill(
-              //top: 0,left: 0,right: 0,bottom: 0,
+                //top: 0,left: 0,right: 0,bottom: 0,
                 child: Column(
-                  children: [
-
-                    _buildTopBar(
-                      backgroundColor,
-                      iconColor,
-                      barHeight,
-                      buttonPadding,
+              children: [
+                _buildTopBar(
+                  backgroundColor,
+                  iconColor,
+                  barHeight,
+                  buttonPadding,
+                ),
+                Visibility(
+                    visible: isLocked,
+                    child: Expanded(
+                        child: Center(
+                      child: _displayBufferingIndicator
+                          ? const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            )
+                          : _buildHitArea(barHeight),
+                    ))),
+               /* if (_subtitleOn)
+                  Transform.translate(
+                    offset: Offset(
+                      0.0,
+                      notifier.hideStuff ? barHeight * 0.8 : 0.0,
                     ),
-
-                    Expanded(
-                        child:
-                        Center(
-                          child:
-                          _displayBufferingIndicator ?
-                          const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          )
-
-                              :
-                          _buildHitArea(barHeight),
-                        )
-                    ),
-
-                    if (_subtitleOn)
-                      Transform.translate(
-                        offset: Offset(
-                          0.0,
-                          notifier.hideStuff ? barHeight * 0.8 : 0.0,
-                        ),
-                        child: _buildSubtitles(flexiController.subtitle!),
-                      ),
-                    _buildBottomBar(backgroundColor, iconColor, barHeight),
-
-                  ],
-                )
-            ),
+                    child: _buildSubtitles(flexiController.subtitle!),
+                  ),*/
+                Visibility(visible: isLocked, child: _buildBottomBar(backgroundColor, iconColor, barHeight))
+              ],
+            )),
 
             // if (_displayBufferingIndicator)
             //   const Center(
@@ -426,7 +405,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
             // ),
           ],
         ),
-      /*  child: AbsorbPointer(
+        /*  child: AbsorbPointer(
           absorbing: notifier.hideStuff,
 
           child: Stack(
@@ -507,7 +486,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
             ],
           ),
            //working code
-           *//* child: Stack(
+           */ /* child: Stack(
               children: [
                 if (_displayBufferingIndicator)
                   const Center(
@@ -537,7 +516,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   ],
                 ),
               ],
-            ),*//*
+            ),*/ /*
 
         ),*/
       ),
@@ -550,7 +529,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
     VolumeController().removeListener();
     super.dispose();
   }
-
 
   void _dispose() {
     controller.removeListener(_updateState);
@@ -579,50 +557,46 @@ class _CupertinoControlsState extends State<CupertinoControls>
   ) {
     final options = <OptionItem>[];
 
-    if (flexiController.additionalOptions != null ) {
+    if (flexiController.additionalOptions != null) {
       flexiController.additionalOptions!;
     }
 
     return GestureDetector(
-      onTap: () async {
-        _hideTimer?.cancel();
+        onTap: () async {
+          _hideTimer?.cancel();
 
-        if (flexiController.optionsBuilder != null) {
-          await flexiController.optionsBuilder!(context, options);
-        } else {
-          await showCupertinoModalPopup<OptionItem>(
-            context: context,
-            semanticsDismissible: true,
-            useRootNavigator: flexiController.useRootNavigator,
-            builder: (context) => CupertinoOptionsDialog(
-              options: options,
-              cancelButtonText:
-                  flexiController.optionsTranslation?.cancelButtonText,
-            ),
-          );
-          if (_latestValue.isPlaying) {
-            _startHideTimer();
+          if (flexiController.optionsBuilder != null) {
+            await flexiController.optionsBuilder!(context, options);
+          } else {
+            await showCupertinoModalPopup<OptionItem>(
+              context: context,
+              semanticsDismissible: true,
+              useRootNavigator: flexiController.useRootNavigator,
+              builder: (context) => CupertinoOptionsDialog(
+                options: options,
+                cancelButtonText: flexiController.optionsTranslation?.cancelButtonText,
+              ),
+            );
+            if (_latestValue.isPlaying) {
+              _startHideTimer();
+            }
           }
-        }
-      },
-      child:
-      AnimatedOpacity(
-        opacity: notifier.hideStuff ? 0.0 : 1.0,
-        duration: varDuration,
-      child:
-      Container(
-        height: barHeight,
-        color: Colors.transparent,
-        padding: const EdgeInsets.only(left: 4.0, right: 8.0),
-        margin: const EdgeInsets.only(right: 6.0),
-        child: Icon(
-          Icons.more_vert,
-          color: iconColor,
-          size: 18,
-        ),
-      ),
-    )
-    );
+        },
+        child: AnimatedOpacity(
+          opacity: notifier.hideStuff ? 0.0 : 1.0,
+          duration: varDuration,
+          child: Container(
+            height: barHeight,
+            color: Colors.transparent,
+            padding: const EdgeInsets.only(left: 4.0, right: 8.0),
+            margin: const EdgeInsets.only(right: 6.0),
+            child: Icon(
+              Icons.more_vert,
+              color: iconColor,
+              size: 18,
+            ),
+          ),
+        ));
   }
 
   Widget _buildSubtitles(Subtitles subtitles) {
@@ -675,59 +649,221 @@ class _CupertinoControlsState extends State<CupertinoControls>
       child: AnimatedOpacity(
         opacity: notifier.hideStuff ? 0.0 : 1.0,
         duration: varDuration,
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(seconds: 1),
           color: Colors.transparent,
           alignment: Alignment.bottomCenter,
-
           width: MediaQuery.sizeOf(context).width,
+          child: AnimatedContainer(
+            duration: const Duration(seconds: 1),
+            color: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            height: flexiController.isFullScreen ? barHeight : 40,
+            child: flexiController.isLive
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      _buildLive(Colors.red),
+                      _buildPosition(iconColor),
+                      _buildProgressBar(),
+                      _buildRemaining(iconColor),
+                      /* _buildSubtitleToggle(iconColor, barHeight),*/
+
+                      AnimatedOpacity(
+                        opacity: notifier.hideStuff ? 0.0 : 1.0,
+                        duration: varDuration,
+                        child: IconButton(
+                            onPressed: () async {
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (context) => SafeArea(
+                                    child: GetBuilder<PodGetXVideoController>(
+                                  tag: widget.tag,
+                                  builder: (podCtr) => Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (podCtr.vimeoOrVideoUrls.isNotEmpty)
+                                        /*  _bottomSheetTiles(
+                                  title: podCtr.podPlayerLabels.quality,
+                                  icon: Icons.video_settings_rounded,
+                                  subText: '${podCtr.vimeoPlayingVideoQuality}p',
+                                  onTap: () async{
+                                    Navigator.of(context).pop();
+                                    podCtr.videoCtr!.pause();
+                                    controller.pause();
+                                    Timer(const Duration(milliseconds: 100), () {
+                                      showModalBottomSheet<void>(
+                                        context: context,
+                                        builder: (context) => SafeArea(
+                                          child: _VideoQualitySelectorMob(
+                                            tag: widget.tag,
+                                            controllers: _flexiController,
+                                            onTap: null,
+                                          ),
+                                        ),
+                                      );
+                                    });
 
 
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: Container(
-              color: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              height: flexiController.isFullScreen?barHeight:40,
-              child: flexiController.isLive
-                  ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+                                  },
+                                ),*/
+                                        _bottomSheetTiles(
+                                          title: podCtr.podPlayerLabels.loopVideo,
+                                          icon: Icons.loop_rounded,
+                                          subText: podCtr.isLooping
+                                              ? podCtr.podPlayerLabels.optionEnabled
+                                              : podCtr.podPlayerLabels.optionDisabled,
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            podCtr.toggleLooping();
+                                          },
+                                        ),
+                                      _bottomSheetTiles(
+                                        title: podCtr.podPlayerLabels.playbackSpeed,
+                                        icon: Icons.slow_motion_video_rounded,
+                                        subText: latestValue!.playbackSpeed.toString(),
+                                        onTap: () async {
+                                          Navigator.pop(context);
+                                          _hideTimer?.cancel();
 
-                  _buildPosition(iconColor),
-                  _buildProgressBar(),
-                  _buildRemaining(iconColor),
-                  /* _buildSubtitleToggle(iconColor, barHeight),*/
-                  _buildLive(Colors.red),
-                  _buildExpandButton(iconColor, barHeight),
+                                          final chosenSpeed = await showCupertinoModalPopup<double>(
+                                            context: context,
+                                            semanticsDismissible: true,
+                                            useRootNavigator: flexiController.useRootNavigator,
+                                            builder: (context) => PlaybackSpeedDialog(
+                                              speeds: flexiController.playbackSpeeds,
+                                              selected: _latestValue.playbackSpeed,
+                                            ),
+                                          );
 
-                ],
-              )
-                  : Row(
-                children: <Widget>[
+                                          if (chosenSpeed != null) {
+                                            controller.setPlaybackSpeed(chosenSpeed);
+                                          }
 
-                  // _buildSkipBack(iconColor, barHeight),
-                  //_buildPlayPause(controller, iconColor, barHeight),
-                  // _buildSkipForward(iconColor, barHeight),
+                                          if (_latestValue.isPlaying) {
+                                            _startHideTimer();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              );
+                            },
+                            icon: Icon(BootstrapIcons.gear, color: widget.iconColor, size: 16)),
+                      ),
+                      _buildExpandButton(iconColor, barHeight),
+                    ],
+                  )
+                : Row(
+                    children: <Widget>[
+                      // _buildSkipBack(iconColor, barHeight),
+                      //_buildPlayPause(controller, iconColor, barHeight),
+                      // _buildSkipForward(iconColor, barHeight),
 
+                      _buildPosition(iconColor),
+                      _buildProgressBar(),
+                      _buildRemaining(iconColor),
+                      /*  _buildSubtitleToggle(iconColor, barHeight),*/
 
-                  _buildPosition(iconColor),
-                  _buildProgressBar(),
-                  _buildRemaining(iconColor),
-                  _buildSubtitleToggle(iconColor, barHeight),
-
-                  /* if (flexiController.allowPlaybackSpeedChanging)
+                      /* if (flexiController.allowPlaybackSpeedChanging)
                             _buildSpeedButton(controller, iconColor, barHeight),*/
 
-                  // if (flexiController.additionalOptions != null &&
-                  //     flexiController
-                  //         .additionalOptions!(context).isNotEmpty)
-                  //   _buildOptionsButton(iconColor, barHeight),
+                      // if (flexiController.additionalOptions != null &&
+                      //     flexiController
+                      //         .additionalOptions!(context).isNotEmpty)
+                      //   _buildOptionsButton(iconColor, barHeight),
+                      AnimatedOpacity(
+                        opacity: notifier.hideStuff ? 0.0 : 1.0,
+                        duration: varDuration,
+                        child: IconButton(
+                            onPressed: () async {
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (context) => SafeArea(
+                                    child: GetBuilder<PodGetXVideoController>(
+                                  tag: widget.tag,
+                                  builder: (podCtr) => Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (podCtr.vimeoOrVideoUrls.isNotEmpty)
+                                        /*  _bottomSheetTiles(
+                                  title: podCtr.podPlayerLabels.quality,
+                                  icon: Icons.video_settings_rounded,
+                                  subText: '${podCtr.vimeoPlayingVideoQuality}p',
+                                  onTap: () async{
+                                    Navigator.of(context).pop();
+                                    podCtr.videoCtr!.pause();
+                                    controller.pause();
+                                    Timer(const Duration(milliseconds: 100), () {
+                                      showModalBottomSheet<void>(
+                                        context: context,
+                                        builder: (context) => SafeArea(
+                                          child: _VideoQualitySelectorMob(
+                                            tag: widget.tag,
+                                            controllers: _flexiController,
+                                            onTap: null,
+                                          ),
+                                        ),
+                                      );
+                                    });
 
-                  _buildExpandButton(iconColor, barHeight),
 
-                ],
-              ),
-            ),
+                                  },
+                                ),*/
+                                        _bottomSheetTiles(
+                                          title: podCtr.podPlayerLabels.loopVideo,
+                                          icon: Icons.loop_rounded,
+                                          subText: podCtr.isLooping
+                                              ? podCtr.podPlayerLabels.optionEnabled
+                                              : podCtr.podPlayerLabels.optionDisabled,
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            podCtr.toggleLooping();
+                                          },
+                                        ),
+                                      _bottomSheetTiles(
+                                        title: podCtr.podPlayerLabels.playbackSpeed,
+                                        icon: Icons.slow_motion_video_rounded,
+                                        subText: latestValue!.playbackSpeed.toString(),
+                                        onTap: () async {
+                                          Navigator.pop(context);
+                                          _hideTimer?.cancel();
+
+                                          final chosenSpeed = await showCupertinoModalPopup<double>(
+                                            context: context,
+                                            semanticsDismissible: true,
+                                            useRootNavigator: flexiController.useRootNavigator,
+                                            builder: (context) => PlaybackSpeedDialog(
+                                              speeds: flexiController.playbackSpeeds,
+                                              selected: _latestValue.playbackSpeed,
+                                            ),
+                                          );
+
+                                          if (chosenSpeed != null) {
+                                            controller.setPlaybackSpeed(chosenSpeed);
+                                          }
+
+                                          if (_latestValue.isPlaying) {
+                                            _startHideTimer();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              );
+                            },
+                            icon: Icon(
+                              BootstrapIcons.gear,
+                              color: widget.iconColor,
+                              size: 20,
+                            )),
+                      ),
+
+                      _buildExpandButton(iconColor, barHeight),
+                    ],
+                  ),
           ),
         ),
       ),
@@ -744,14 +880,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
     );
   }
 
-
-  IconButton _buildExpandButton( Color iconColor,
-      double barHeight,){
-  return IconButton(onPressed: _onExpandCollapse, icon:  Icon(
-    flexiController.isFullScreen
-    ? Icons.fullscreen_exit_rounded
-    : Icons.fullscreen,color: iconColor));
-  /*  return GestureDetector(
+  IconButton _buildExpandButton(
+    Color iconColor,
+    double barHeight,
+  ) {
+    return IconButton(
+        onPressed: _onExpandCollapse,
+        icon: Icon(flexiController.isFullScreen ? Icons.fullscreen_exit_rounded : Icons.fullscreen, color: iconColor));
+    /*  return GestureDetector(
       onTap: _onExpandCollapse,
       child: Container(
         height: barHeight,
@@ -808,24 +944,23 @@ class _CupertinoControlsState extends State<CupertinoControls>
   // }
 
   Widget _buildBackButton(
-      Color backgroundColor,
-      Color iconColor,
-      double barHeight,
-      double buttonPadding,
-      ) {
+    Color backgroundColor,
+    Color iconColor,
+    double barHeight,
+    double buttonPadding,
+  ) {
     return IconButton(
-      onPressed: (){
+        onPressed: () {
+          _onExpandCollapse();
 
-        _onExpandCollapse();
+          // _flexiController!.exitFullScreen();
+          // Navigator.of(
+          //   context,
+          //   rootNavigator: _flexiController!.useRootNavigator,
+          // ).pop();
+          //  Navigator.pop(context);
 
-        // _flexiController!.exitFullScreen();
-        // Navigator.of(
-        //   context,
-        //   rootNavigator: _flexiController!.useRootNavigator,
-        // ).pop();
-        //  Navigator.pop(context);
-
-         /*
+          /*
          if (_isFullScreen) {
       Wakelock.disable();
       _navigatorState.maybePop();
@@ -835,252 +970,221 @@ class _CupertinoControlsState extends State<CupertinoControls>
           _betterPlayerConfiguration.deviceOrientationsAfterFullScreen);
     }
           */
-      },
-      icon: Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child:AnimatedOpacity(
-          opacity: notifier.hideStuff ? 0.0 : 1.0,
-          duration: varDuration,
-          child: Icon(
-            Icons.keyboard_arrow_left,
-            color: iconColor,
+        },
+        icon: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: AnimatedOpacity(
+            opacity: notifier.hideStuff ? 0.0 : 1.0,
+            duration: varDuration,
+            child: Icon(
+              Icons.keyboard_arrow_left,
+              color: iconColor,
+            ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
   Widget _buildHitArea(double barHeight) {
-
     final bool isFinished = _latestValue.position >= _latestValue.duration;
-    final bool showPlayButton =
-        widget.showPlayButton && !_latestValue.isPlaying && ! dragging;
+    final bool showPlayButton = widget.showPlayButton && !_latestValue.isPlaying && !dragging;
 
-    return
-      AnimatedOpacity(
+    return AnimatedOpacity(
         opacity: notifier.hideStuff ? 0.0 : 1.0,
         duration: varDuration,
-      child:
-      GestureDetector(
-      onTap: _latestValue.isPlaying
-          ? _cancelAndRestartTimer
-          : () {
-              _hideTimer?.cancel();
+        child: GestureDetector(
+            onTap: _latestValue.isPlaying
+                ? _cancelAndRestartTimer
+                : () {
+                    _hideTimer?.cancel();
 
-              setState(() {
-                notifier.hideStuff = false;
-              });
-            },
-      child:Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-
-          //device brightness
-          _flexiController!.isBrignessOptionDisplay && _flexiController!.isFullScreen ?
-          AnimatedContainer(
-            duration: const Duration(seconds: 1),
-            height: 200,
-            width: 100,
-            //(MediaQuery.of(context).orientation) == Orientation.portrait ? 50.0 : 47.0,
-           //padding: _flexiController!.isFullScreen  && !isPhone ? EdgeInsets.only(top: 50,bottom: 50) : EdgeInsets.zero,
-            child:Column(
-
+                    setState(() {
+                      notifier.hideStuff = false;
+                    });
+                  },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.brightness_6,color: widget.iconColor,size: 18,),
-                Expanded(
-                  child: RotatedBox(
-                      quarterTurns: 3,
-                      child:
-
-                     FutureBuilder<double>(
-                          future: ScreenBrightness().current,
-                          builder: (context, snapshot) {
-                            double currentBrightness = 0;
-                            if (snapshot.hasData) {
-                              currentBrightness = snapshot.data!;
-                            }
-
-                            return StreamBuilder<double>(
-                              stream: ScreenBrightness().onCurrentBrightnessChanged,
+                //device brightness
+                /*  _flexiController!.isBrignessOptionDisplay && _flexiController!.isFullScreen ?*/
+                AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.brightness_6,
+                          color: widget.iconColor,
+                          size: 18,
+                        ),
+                        Expanded(
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: FutureBuilder<double>(
+                              future: ScreenBrightness().current,
                               builder: (context, snapshot) {
-                                double changedBrightness = currentBrightness;
+                                double currentBrightness = 0;
                                 if (snapshot.hasData) {
-                                  changedBrightness = snapshot.data!;
+                                  currentBrightness = snapshot.data!;
                                 }
 
-                                return  SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                      trackHeight: 3,
-                                      thumbColor: Colors.pink,
-                                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
-                                  child: Slider(
-                                    value: changedBrightness,
-                                    activeColor: Colors.pink,
-                                    inactiveColor: widget.iconColor,
-                                    onChanged: (value) {
-                                      setBrightness(value);
-                                    },
-                                  ),
+                                return StreamBuilder<double>(
+                                  stream: ScreenBrightness().onCurrentBrightnessChanged,
+                                  builder: (context, snapshot) {
+                                    double changedBrightness = currentBrightness;
+                                    if (snapshot.hasData) {
+                                      changedBrightness = snapshot.data!;
+                                    }
+
+                                    return SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                          trackHeight: 3,
+                                          thumbColor: Colors.pink,
+                                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
+                                      child: Slider(
+                                        value: changedBrightness,
+                                        activeColor: Colors.pink,
+                                        inactiveColor: widget.iconColor,
+                                        onChanged: (value) {
+                                          setBrightness(value);
+                                        },
+                                      ),
+                                    );
+                                    //   Column(
+                                    //   mainAxisSize: MainAxisSize.min,
+                                    //   children: [
+                                    //     // FutureBuilder<bool>(
+                                    //     //   future: ScreenBrightness().hasChanged,
+                                    //     //   builder: (context, snapshot) {
+                                    //     //     return Text(
+                                    //     //         'Brightness has changed via plugin: ${snapshot.data}');
+                                    //     //   },
+                                    //     // ),
+                                    //     // Text('Current brightness: $changedBrightness'),
+                                    //     Slider.adaptive(
+                                    //       value: changedBrightness,
+                                    //       onChanged: (value) {
+                                    //         setBrightness(value);
+                                    //       },
+                                    //     ),
+                                    //     // ElevatedButton(
+                                    //     //   onPressed: () {
+                                    //     //     resetBrightness();
+                                    //     //   },
+                                    //     //   child: const Text('reset brightness'),
+                                    //     // ),
+                                    //   ],
+                                    // );
+                                  },
                                 );
-                                //   Column(
-                                //   mainAxisSize: MainAxisSize.min,
-                                //   children: [
-                                //     // FutureBuilder<bool>(
-                                //     //   future: ScreenBrightness().hasChanged,
-                                //     //   builder: (context, snapshot) {
-                                //     //     return Text(
-                                //     //         'Brightness has changed via plugin: ${snapshot.data}');
-                                //     //   },
-                                //     // ),
-                                //     // Text('Current brightness: $changedBrightness'),
-                                //     Slider.adaptive(
-                                //       value: changedBrightness,
-                                //       onChanged: (value) {
-                                //         setBrightness(value);
-                                //       },
-                                //     ),
-                                //     // ElevatedButton(
-                                //     //   onPressed: () {
-                                //     //     resetBrightness();
-                                //     //   },
-                                //     //   child: const Text('reset brightness'),
-                                //     // ),
-                                //   ],
-                                // );
                               },
-                            );
-                          },
-                        ),
+                            ),
 
-                      // SliderTheme(
-                      //   child: Slider(
-                      //     value: changedBrightness,
-                      //     activeColor: Colors.white,
-                      //     inactiveColor: widget.iconColor,
-                      //     onChanged: (value) {
-                      //       setBrightness(value);
-                      //     },
-                      //   ),
-                      //   data: SliderTheme.of(context).copyWith(
-                      //       trackHeight: 3,
-                      //       thumbColor: Colors.transparent,
-                      //       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
-                      // ),
+                            // SliderTheme(
+                            //   child: Slider(
+                            //     value: changedBrightness,
+                            //     activeColor: Colors.white,
+                            //     inactiveColor: widget.iconColor,
+                            //     onChanged: (value) {
+                            //       setBrightness(value);
+                            //     },
+                            //   ),
+                            //   data: SliderTheme.of(context).copyWith(
+                            //       trackHeight: 3,
+                            //       thumbColor: Colors.transparent,
+                            //       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
+                            // ),
+                          ),
+                        )
+                      ],
+                    )),
+                /* : const SizedBox(),*/
 
-                  ),
-                )
+                _buildSkipBack(
+                    widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
+                CenterPlayButton(
+                  backgroundColor: const Color(0xFFFF0000),
+                  iconColor: widget.iconColor,
+                  isFinished: isFinished,
+                  isPlaying: controller.value.isPlaying,
+                  show: showPlayButton,
+                  onPressed: playPause,
+                  isPhone: isPhone,
+                ),
+                _buildSkipForward(
+                    widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
+
+                //device volumn
+                /* _flexiController!.isVolumnOptionDisplay && _flexiController!.isFullScreen  ?*/
+                AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      children: [
+                        if (flexiController.allowMuting)
+                          _buildMuteNewButton(
+                            controller,
+                            widget.backgroundColor,
+                            widget.iconColor,
+                            MediaQuery.of(context).orientation == Orientation.portrait ? 30.0 : 47.0,
+                            MediaQuery.of(context).orientation == Orientation.portrait ? 16.0 : 24.0,
+                          ),
+                        Expanded(
+                          child: RotatedBox(
+                            quarterTurns: 3,
+                            child: SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                  trackHeight: 3,
+                                  thumbColor: Colors.pink,
+                                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
+                              child: Slider(
+                                max: 1,
+                                min: 0,
+                                activeColor: Colors.pink,
+                                inactiveColor: widget.iconColor,
+                                onChanged: (double value) {
+                                  setState(() {
+                                    _setVolumeValue = value;
+                                    VolumeController().setVolume(_setVolumeValue);
+                                  });
+                                },
+                                value: _setVolumeValue,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    )) /* : const SizedBox()*/,
               ],
             )
-          ) : const SizedBox(),
 
-          _buildSkipBack(widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
-          CenterPlayButton(
-            backgroundColor:const Color(0xFFFF0000),
-            iconColor: widget.iconColor,
-            isFinished: isFinished,
-            isPlaying: controller.value.isPlaying,
-            show: showPlayButton,
-            onPressed: playPause,
-            isPhone: isPhone,
-          ),
-          _buildSkipForward(widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait  ? 30.0 : 47.0),
-
-          //device volumn
-          _flexiController!.isVolumnOptionDisplay && _flexiController!.isFullScreen  ?
-          AnimatedContainer(
-            duration: const Duration(seconds: 1),
-              height: 200,
-              width: 100,
-            // height: (MediaQuery.of(context).orientation) == Orientation.portrait ? 50.0 : 47.0,
-              //padding: _flexiController!.isFullScreen && !isPhone ? EdgeInsets.only(top: (MediaQuery.of(context).size.width/6),bottom: (MediaQuery.of(context).size.width/6)) : EdgeInsets.zero,
-              child:Column(
-                children: [
-                  if (flexiController.allowMuting)
-                    _buildMuteNewButton(
-                        controller,
-                        widget.backgroundColor,
-                        widget.iconColor,
-                        MediaQuery.of(context).orientation == Orientation.portrait ? 30.0 : 47.0,
-                        MediaQuery.of(context).orientation == Orientation.portrait ? 16.0 : 24.0,
-                    ),
-                  Expanded(
-                    child: RotatedBox(
-                        quarterTurns: 3,
-                        child: SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                              trackHeight: 3,
-                              thumbColor: Colors.pink,
-                              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
-                          child: Slider(
-                            max: 1,
-                            min: 0,
-                            activeColor: Colors.pink,
-                            inactiveColor: widget.iconColor,
-                            onChanged: (double value) {
-                              setState(() {
-                                _setVolumeValue = value;
-                                VolumeController().setVolume(_setVolumeValue);
-                              });
-                            },
-                            value: _setVolumeValue,
-                          ),
-                        ),
-                    ),
-                  )
-                ],
-              )
-          ) : const SizedBox(),
-        ],
-      )
-
-      // CenterPlayButton(
-      //   backgroundColor: widget.backgroundColor,
-      //   iconColor: widget.iconColor,
-      //   isFinished: isFinished,
-      //   isPlaying: controller.value.isPlaying,
-      //   show: showPlayButton,
-      //   onPressed: playPause,
-      // ),
-    ));
+            // CenterPlayButton(
+            //   backgroundColor: widget.backgroundColor,
+            //   iconColor: widget.iconColor,
+            //   isFinished: isFinished,
+            //   isPlaying: controller.value.isPlaying,
+            //   show: showPlayButton,
+            //   onPressed: playPause,
+            // ),
+            ));
   }
 
-  GestureDetector _buildMuteNewButton(
-      VideoPlayerController controller,
-      Color backgroundColor,
-      Color iconColor,
-      double barHeight,
-      double buttonPadding,
-      ) {
-    return
-
-      GestureDetector(
-        onTap: () {
-          _cancelAndRestartTimer();
-
-          if (_latestValue.volume == 0) {
-            controller.setVolume(_latestVolume ?? 0.5);
-          } else {
-            _latestVolume = controller.value.volume;
-            controller.setVolume(0.0);
-          }
-        },
-        child:  Container(
-          height: barHeight,
-          padding: EdgeInsets.only(
-            left: buttonPadding,
-            right: buttonPadding,
-          ),
-          child: Icon(
-
-            // _latestValue.volume > 0
-            _setVolumeValue != 0
-                ? Icons.volume_up : Icons.volume_off,
-            color: iconColor,
-            size: 20,
-          ),
-        ),
-      );
+  Widget _buildMuteNewButton(
+    VideoPlayerController controller,
+    Color backgroundColor,
+    Color iconColor,
+    double barHeight,
+    double buttonPadding,
+  ) {
+    return AnimatedOpacity(
+      opacity: notifier.hideStuff ? 0.0 : 1.0,
+      duration: varDuration,
+      child: Icon(
+        // _latestValue.volume > 0
+        _setVolumeValue != 0 ? Icons.volume_up : Icons.volume_off,
+        color: iconColor,
+      ),
+    );
   }
 
   IconButton buildMuteButton(
@@ -1090,12 +1194,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
     double barHeight,
     double buttonPadding,
   ) {
-    return
-
-      IconButton(
+    return IconButton(
       onPressed: () {
         _cancelAndRestartTimer();
-
         if (_latestValue.volume == 0) {
           controller.setVolume(_latestVolume ?? 0.5);
         } else {
@@ -1103,7 +1204,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
           controller.setVolume(0.0);
         }
       },
-      icon:  AnimatedOpacity(
+      icon: AnimatedOpacity(
         opacity: notifier.hideStuff ? 0.0 : 1.0,
         duration: varDuration,
         child: ClipRRect(
@@ -1111,7 +1212,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
           child: Icon(
             _latestValue.volume > 0 ? Icons.volume_up : Icons.volume_off,
             color: iconColor,
-
           ),
         ),
       ),
@@ -1299,7 +1399,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
   ) {
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
-
       margin: EdgeInsets.only(
         top: marginSize,
         right: marginSize,
@@ -1309,14 +1408,15 @@ class _CupertinoControlsState extends State<CupertinoControls>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-
-          if (flexiController.isFullScreen)
-            _buildBackButton(
+          Visibility(
+            visible: isLocked,
+            child: _buildBackButton(
               backgroundColor,
               iconColor,
               barHeight,
               buttonPadding,
             ),
+          ),
 
           // if (flexiController.allowFullScreen)
           //   _buildExpandButton(
@@ -1327,10 +1427,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
           //   ),
 
           const Spacer(),
-          if (flexiController.additionalOptions != null)
-            flexiController.additionalOptions!,
-            /*_buildOptionsButton(iconColor, barHeight),*/
-         /* Align(
+          if (flexiController.additionalOptions != null) flexiController.additionalOptions!,
+          /*_buildOptionsButton(iconColor, barHeight),*/
+          /* Align(
             alignment: Alignment.topRight,
             child: IconButton(onPressed: (){
               if(isMuted){
@@ -1344,101 +1443,35 @@ class _CupertinoControlsState extends State<CupertinoControls>
               });
             },icon: Icon(isMuted?BootstrapIcons.volume_up:BootstrapIcons.volume_down,color: iconColor)),
           ),*/
-          if (flexiController.allowMuting)
+          /* if (flexiController.allowMuting)
             buildMuteButton(
               controller,
               backgroundColor,
               iconColor,
               barHeight,
               buttonPadding,
-            ),
-          const SizedBox(width: 10),
+            ),*/
+
           AnimatedOpacity(
-            opacity: notifier.hideStuff ? 0.0 : 1.0,
-            duration: varDuration,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: IconButton(onPressed: () async{
-                showModalBottomSheet<void>(
-                  context: context,
-                  builder: (context) => SafeArea(child: GetBuilder<PodGetXVideoController>(
-                    tag: widget.tag,
-                    builder: (podCtr) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (podCtr.vimeoOrVideoUrls.isNotEmpty)
-                        /*  _bottomSheetTiles(
-                                  title: podCtr.podPlayerLabels.quality,
-                                  icon: Icons.video_settings_rounded,
-                                  subText: '${podCtr.vimeoPlayingVideoQuality}p',
-                                  onTap: () async{
-                                    Navigator.of(context).pop();
-                                    podCtr.videoCtr!.pause();
-                                    controller.pause();
-                                    Timer(const Duration(milliseconds: 100), () {
-                                      showModalBottomSheet<void>(
-                                        context: context,
-                                        builder: (context) => SafeArea(
-                                          child: _VideoQualitySelectorMob(
-                                            tag: widget.tag,
-                                            controllers: _flexiController,
-                                            onTap: null,
-                                          ),
-                                        ),
-                                      );
-                                    });
+              opacity: notifier.hideStuff ? 0.0 : 1.0,
+              duration: varDuration,
+              child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isLocked = !isLocked;
+                      log("Lock $isLocked");
+                    });
+                    if (isLocked) {
+                      notifier.hideStuff = false;
+                      log("Visible $isLocked");
+                    } else {
+                      notifier.hideStuff = true;
+                      log("Visible $isLocked");
+                    }
+                  },
+                  icon: Icon(isLocked ? Icons.lock_open_outlined : Icons.lock, color: widget.iconColor)))
 
-
-                                  },
-                                ),*/
-                          _bottomSheetTiles(
-                            title: podCtr.podPlayerLabels.loopVideo,
-                            icon: Icons.loop_rounded,
-                            subText: podCtr.isLooping
-                                ? podCtr.podPlayerLabels.optionEnabled
-                                : podCtr.podPlayerLabels.optionDisabled,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              podCtr.toggleLooping();
-                            },
-                          ),
-                        _bottomSheetTiles(
-                          title: podCtr.podPlayerLabels.playbackSpeed,
-                          icon: Icons.slow_motion_video_rounded,
-                          subText: latestValue!.playbackSpeed.toString(),
-                          onTap: () async {
-                            Navigator.pop(context);
-                            _hideTimer?.cancel();
-
-                            final chosenSpeed = await showCupertinoModalPopup<double>(
-                              context: context,
-                              semanticsDismissible: true,
-                              useRootNavigator: flexiController.useRootNavigator,
-                              builder: (context) => PlaybackSpeedDialog(
-                                speeds: flexiController.playbackSpeeds,
-                                selected: _latestValue.playbackSpeed,
-                              ),
-                            );
-
-                            if (chosenSpeed != null) {
-                              controller.setPlaybackSpeed(chosenSpeed);
-                            }
-
-                            if (_latestValue.isPlaying) {
-                              _startHideTimer();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  )),
-                );
-              }, icon:  Icon(BootstrapIcons.gear,color: widget.iconColor)),
-            ),
-          ),
-          const SizedBox(width: 10),
           //mute button - old position
-
         ],
       ),
     );
@@ -1493,39 +1526,39 @@ class _CupertinoControlsState extends State<CupertinoControls>
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: SmoothVideoProgress(
           controller: controller,
-          builder: (context, position, duration, child) => SliderTheme(data: SliderTheme.of(context).copyWith(
-              trackHeight: 3,
-              thumbColor: Colors.pink,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)), child: Slider(
-            activeColor: Colors.pink,
-            onChangeStart: (_) {
-              controller.pause();
+          builder: (context, position, duration, child) => SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                  trackHeight: 3,
+                  thumbColor: Colors.pink,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0)),
+              child: Slider(
+                activeColor: Colors.pink,
+                onChangeStart: (_) {
+                  controller.pause();
 
-              Future.delayed(const Duration(seconds: 1),(){
-                setState(() {
-                  dragging=true;
-                });
-              });
-            },
-            onChangeEnd: (_) {
-              controller.play();
-              Future.delayed(const Duration(seconds: 1),(){
-                setState(() {
-                  dragging=false;
-                });
-              });
-            },
-            onChanged: (value) =>
-                controller.seekTo(Duration(milliseconds: value.toInt())),
-            value: position.inMilliseconds.toDouble(),
-            min: 0,
-            max: duration.inMilliseconds.toDouble(),
-          )),
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {
+                      dragging = true;
+                    });
+                  });
+                },
+                onChangeEnd: (_) {
+                  controller.play();
+                  Future.delayed(const Duration(seconds: 1), () {
+                    setState(() {
+                      dragging = false;
+                    });
+                  });
+                },
+                onChanged: (value) => controller.seekTo(Duration(milliseconds: value.toInt())),
+                value: position.inMilliseconds.toDouble(),
+                min: 0,
+                max: duration.inMilliseconds.toDouble(),
+              )),
         ),
       ),
     );
   }
-
 
   void playPause() {
     final isFinished = _latestValue.position >= _latestValue.duration;
@@ -1555,16 +1588,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
   void _skipBack() {
     _cancelAndRestartTimer();
     final beginning = Duration.zero.inMilliseconds;
-    final skip =
-        (_latestValue.position - const Duration(seconds: 10)).inMilliseconds;
+    final skip = (_latestValue.position - const Duration(seconds: 10)).inMilliseconds;
     controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
   }
 
   void _skipForward() {
     _cancelAndRestartTimer();
     final end = _latestValue.duration.inMilliseconds;
-    final skip =
-        (_latestValue.position + const Duration(seconds: 10)).inMilliseconds;
+    final skip = (_latestValue.position + const Duration(seconds: 10)).inMilliseconds;
     controller.seekTo(Duration(milliseconds: math.min(skip, end)));
   }
 
@@ -1625,44 +1656,44 @@ class PlaybackSpeedDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const selectedColor = Colors.black;//CupertinoTheme.of(context).primaryColor;
+    const selectedColor = Colors.black; //CupertinoTheme.of(context).primaryColor;
 
     return CupertinoActionSheet(
       actions: _speeds
           .map(
             (e) => CupertinoActionSheetAction(
-              onPressed: () {
-                Navigator.of(context).pop(e);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 15,right: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // if (e == _selected)
+                onPressed: () {
+                  Navigator.of(context).pop(e);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // if (e == _selected)
 
-
-                    Expanded(child: Text(e.toString(),style: const TextStyle(color:selectedColor),textAlign: TextAlign.start)),
-                    const SizedBox(width: 15),
-                    Icon(Icons.check, size: 20.0, color: e == _selected ? selectedColor : Colors.transparent),
-
-                  ],
-                ),
-              )
-            ),
+                      Expanded(
+                          child: Text(e.toString(),
+                              style: const TextStyle(color: selectedColor), textAlign: TextAlign.start)),
+                      const SizedBox(width: 15),
+                      Icon(Icons.check, size: 20.0, color: e == _selected ? selectedColor : Colors.transparent),
+                    ],
+                  ),
+                )),
           )
           .toList(),
     );
   }
 }
+
 class VideoPlaybackSelectorMob extends StatelessWidget {
   final void Function()? onTap;
   final String tag;
-
-  const VideoPlaybackSelectorMob({Key? key,
+  const VideoPlaybackSelectorMob({
+    Key? key,
     required this.onTap,
     required this.tag,
-  }):super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1673,13 +1704,13 @@ class VideoPlaybackSelectorMob extends StatelessWidget {
         children: podCtr.videoPlaybackSpeeds
             .map(
               (e) => ListTile(
-            title: Text(e),
-            onTap: () {
-              onTap != null ? onTap!() : Navigator.of(context).pop();
-              podCtr.setVideoPlayBack(e);
-            },
-          ),
-        )
+                title: Text(e),
+                onTap: () {
+                  onTap != null ? onTap!() : Navigator.of(context).pop();
+                  podCtr.setVideoPlayBack(e);
+                },
+              ),
+            )
             .toList(),
       ),
     );

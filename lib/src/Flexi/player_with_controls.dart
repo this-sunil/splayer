@@ -47,13 +47,13 @@ class PlayerWithControls extends StatelessWidget {
       return GestureDetector(
           onScaleStart: (details){
             prevScale=scale;
-            print("Scale Start");
-
+            //print("Scale Start");
           },
           onScaleUpdate: (details){
             scale=prevScale*details.scale;
-              print("Scale Update $scale");
+            //print("Scale Update $scale");
               scale=scale.clamp(1.0, 10.0);
+
               flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
               },
           child:Stack(
