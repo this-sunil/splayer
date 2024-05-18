@@ -1,40 +1,28 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
-
 import 'package:splayer/src/Flexi/cupertino/cupertino_controls.dart';
-
 import 'package:universal_html/html.dart' as uni_html;
 
 import '../splayer.dart';
 import 'Flexi/flexi_player.dart';
-
 import 'Flexi/notifiers/index.dart';
-
 import 'controllers/pod_getx_video_controller.dart';
 import 'utils/logger.dart';
 import 'widgets/double_tap_icon.dart';
 import 'widgets/material_icon_button.dart';
 
 part 'widgets/animated_play_pause_icon.dart';
-
 part 'widgets/core/overlays/mobile_bottomsheet.dart';
-
 part 'widgets/core/overlays/mobile_overlay.dart';
-
 part 'widgets/core/overlays/overlays.dart';
-
 part 'widgets/core/overlays/web_dropdown_menu.dart';
-
 part 'widgets/core/overlays/web_overlay.dart';
-
 part 'widgets/core/pod_core_player.dart';
-
 part 'widgets/core/video_gesture_detector.dart';
-
 part 'widgets/full_screen_view.dart';
 
 class PodVideoPlayer extends StatefulWidget {
@@ -100,15 +88,13 @@ class PodVideoPlayer extends StatefulWidget {
       ..onToggleFullScreen = onToggleFullScreen
       ..onLoading = onLoading
       ..videoThumbnail = videoThumbnail;
-
   }
 
   @override
   State<PodVideoPlayer> createState() => _PodVideoPlayerState();
 }
 
-class _PodVideoPlayerState extends State<PodVideoPlayer>
-    with TickerProviderStateMixin {
+class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStateMixin {
   late PodGetXVideoController _podCtr;
 
   // late String tag;
@@ -195,20 +181,19 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
             ? _podCtr.videoCtr?.value.aspectRatio ?? widget.frameAspectRatio
             : widget.frameAspectRatio;
         return Center(
-          child:  GetBuilder<PodGetXVideoController>(
-              tag: widget.controller.getTag,
-              id: 'errorState',
-              builder: (podCtr) {
-                /// Check if has any error
-                if (podCtr.podVideoState == PodVideoState.error) {
-                  return widget.onVideoError?.call() ?? videoErrorWidget;
-                }
+          child: GetBuilder<PodGetXVideoController>(
+            tag: widget.controller.getTag,
+            id: 'errorState',
+            builder: (podCtr) {
+              /// Check if has any error
+              if (podCtr.podVideoState == PodVideoState.error) {
+                return widget.onVideoError?.call() ?? videoErrorWidget;
+              }
 
-                return podCtr.videoCtr?.value.isInitialized ?? false
-                      ? _buildPlayer()
-                      : Center(child: circularProgressIndicator);
-              },
-
+              return podCtr.videoCtr?.value.isInitialized ?? false
+                  ? _buildPlayer()
+                  : Center(child: circularProgressIndicator);
+            },
           ),
         );
       },
@@ -258,7 +243,6 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
         builder: (podCtr) {
           if (podCtr.isFullScreen) return _thumbnailAndLoadingWidget();
           return _PodCoreVideoPlayer(
-
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio: videoAspectRatio,
             tag: widget.controller.getTag,
@@ -266,9 +250,8 @@ class _PodVideoPlayerState extends State<PodVideoPlayer>
         },
       );
     } else {
-      return 
-        _PodCoreVideoPlayer(
-          videoPlayerCtr: _podCtr.videoCtr!,
+      return _PodCoreVideoPlayer(
+        videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,
       );

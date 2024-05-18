@@ -24,7 +24,6 @@ class _PodVideoQualityController extends _PodVideoController {
         videoId,
         hash,
       );
-
       ///
       vimeoOrVideoUrls = vimeoVideoUrls ?? [];
     } catch (e) {

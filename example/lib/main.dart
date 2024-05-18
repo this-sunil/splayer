@@ -61,30 +61,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    controller=PodPlayerController(
+    controller = PodPlayerController(
         podPlayerConfig: const PodPlayerConfig(
           isLive: false,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=IrfYxlqSJHE",live: false))..initialise();
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=h1-9JLXV_L8", live: false))
+      ..initialise();
     controller.play();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-  
     return Scaffold(
-        body:SafeArea(child: Column(
-        children: [
-          SizedBox(
-              height: 250,
-              child:  PodVideoPlayer(
-                  controller: controller,isLive: true),
-          ),
-
-
-        ],
-      ))
- 
-    );
+        body: SafeArea(
+            child: Column(
+      children: [
+        SizedBox(
+          height: 250,
+          child: PodVideoPlayer(controller: controller, isLive: true),
+        ),
+      ],
+    )));
   }
 }

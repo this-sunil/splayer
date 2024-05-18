@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:splayer/splayer.dart';
 import 'package:splayer/src/Flexi/flexi_progress_colors.dart';
 import 'package:splayer/src/Flexi/models/option_item.dart';
@@ -7,9 +11,6 @@ import 'package:splayer/src/Flexi/models/options_translation.dart';
 import 'package:splayer/src/Flexi/models/subtitle_model.dart';
 import 'package:splayer/src/Flexi/notifiers/player_notifier.dart';
 import 'package:splayer/src/Flexi/player_with_controls.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -27,7 +28,8 @@ typedef FlexiRoutePageBuilder = Widget Function(
 class Flexi extends StatefulWidget {
   const Flexi({
     Key? key,
-    required this.controller,required this.tag,
+    required this.controller,
+    required this.tag,
   }) : super(key: key);
 
   /// The [FlexiController]
@@ -88,10 +90,9 @@ class FlexiState extends State<Flexi> {
   Widget build(BuildContext context) {
     return FlexiControllerProvider(
       controller: widget.controller,
-
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+        builder: (context, w) => PlayerWithControls(tag: widget.tag),
       ),
     );
   }
@@ -101,7 +102,6 @@ class FlexiState extends State<Flexi> {
     Animation<double> animation,
     FlexiControllerProvider controllerProvider,
   ) {
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: AnimatedSwitcher(
@@ -130,15 +130,13 @@ class FlexiState extends State<Flexi> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-
-
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
-      child:FadeTransition(
+      child: FadeTransition(
         opacity: animation,
         child: ChangeNotifierProvider<PlayerNotifier>.value(
           value: notifier,
-          builder: (context, w) =>  PlayerWithControls(tag: widget.tag),
+          builder: (context, w) => PlayerWithControls(tag: widget.tag),
         ),
       ),
     );
@@ -160,23 +158,21 @@ class FlexiState extends State<Flexi> {
   }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
-
     final TransitionRoute<dynamic> route = PageRouteBuilder<dynamic>(
-        fullscreenDialog: true,
-        opaque: false,
-        pageBuilder: _fullScreenRoutePageBuilder,
-        transitionsBuilder: (___, Animation<double> animation, secondaryAnimation, Widget child) {
-          return FadeTransition(
-            opacity: animation,
-            child: RotationTransition(
-              turns: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
-              child: child,
-            ),
-          );
-        },
+      fullscreenDialog: true,
+      opaque: false,
+      pageBuilder: _fullScreenRoutePageBuilder,
+      transitionsBuilder: (___, Animation<double> animation, secondaryAnimation, Widget child) {
+        return FadeTransition(
+          opacity: animation,
+          child: RotationTransition(
+            turns: Tween<double>(begin: 0.5, end: 1.0).animate(animation),
+            child: child,
+          ),
+        );
+      },
       transitionDuration: const Duration(milliseconds: 400),
       reverseTransitionDuration: const Duration(milliseconds: 400),
-
     );
 
     onEnterFullScreen();
@@ -194,23 +190,29 @@ class FlexiState extends State<Flexi> {
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
 
-
-    SystemChrome.setEnabledSystemUIMode(
+    /*SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: widget.controller.systemOverlaysAfterFullScreen,
     );
     SystemChrome.setPreferredOrientations(
       widget.controller.deviceOrientationsAfterFullScreen,
-    );
+    );*/
+    await Future.wait([
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]),
+      if (!(defaultTargetPlatform == TargetPlatform.iOS)) ...[
+        SystemChrome.setPreferredOrientations(DeviceOrientation.values),
+      ]
+    ]);
   }
 
-  void onEnterFullScreen() async{
+  void onEnterFullScreen() async {
     final videoWidth = widget.controller.videoPlayerController.value.size.width;
-    final videoHeight =
-        widget.controller.videoPlayerController.value.size.height;
+    final videoHeight = widget.controller.videoPlayerController.value.size.height;
 
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,overlays: []);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky, overlays: []);
     // if (widget.controller.systemOverlaysOnEnterFullScreen != null) {
     //   /// Optional user preferred settings
     //   SystemChrome.setEnabledSystemUIMode(
@@ -268,9 +270,8 @@ class FlexiState extends State<Flexi> {
 /// `VideoPlayerController`.
 class FlexiController extends ChangeNotifier {
   FlexiController({
-      this.isBrignessOptionDisplay = true,
+    this.isBrignessOptionDisplay = true,
     this.isVolumnOptionDisplay = true,
-
     required this.videoPlayerController,
     this.optionsTranslation,
     this.aspectRatio,
@@ -361,14 +362,12 @@ class FlexiController extends ChangeNotifier {
       Animation<double>,
       Animation<double>,
       FlexiControllerProvider,
-    )?
-        routePageBuilder,
+    )? routePageBuilder,
   }) {
     return FlexiController(
       isBrignessOptionDisplay: isBrignessOptionDisplay ?? this.isBrignessOptionDisplay,
-      isVolumnOptionDisplay : isVolumnOptionDisplay ?? this.isVolumnOptionDisplay,
-      videoPlayerController:
-          videoPlayerController ?? this.videoPlayerController,
+      isVolumnOptionDisplay: isVolumnOptionDisplay ?? this.isVolumnOptionDisplay,
+      videoPlayerController: videoPlayerController ?? this.videoPlayerController,
       optionsTranslation: optionsTranslation ?? this.optionsTranslation,
       aspectRatio: aspectRatio ?? this.aspectRatio,
       autoInitialize: autoInitialize ?? this.autoInitialize,
@@ -376,14 +375,11 @@ class FlexiController extends ChangeNotifier {
       startAt: startAt ?? this.startAt,
       looping: looping ?? this.looping,
       fullScreenByDefault: fullScreenByDefault ?? this.fullScreenByDefault,
-      cupertinoProgressColors:
-          cupertinoProgressColors ?? this.cupertinoProgressColors,
-      materialProgressColors:
-          materialProgressColors ?? this.materialProgressColors,
+      cupertinoProgressColors: cupertinoProgressColors ?? this.cupertinoProgressColors,
+      materialProgressColors: materialProgressColors ?? this.materialProgressColors,
       placeholder: placeholder ?? this.placeholder,
       overlay: overlay ?? this.overlay,
-      showControlsOnInitialize:
-          showControlsOnInitialize ?? this.showControlsOnInitialize,
+      showControlsOnInitialize: showControlsOnInitialize ?? this.showControlsOnInitialize,
       showOptions: showOptions ?? this.showOptions,
       optionsBuilder: optionsBuilder ?? this.optionsBuilder,
       additionalOptions: additionalOptions ?? this.additionalOptions,
@@ -396,26 +392,21 @@ class FlexiController extends ChangeNotifier {
       isLive: isLive ?? this.isLive,
       allowFullScreen: allowFullScreen ?? this.allowFullScreen,
       allowMuting: allowMuting ?? this.allowMuting,
-      allowPlaybackSpeedChanging:
-          allowPlaybackSpeedChanging ?? this.allowPlaybackSpeedChanging,
+      allowPlaybackSpeedChanging: allowPlaybackSpeedChanging ?? this.allowPlaybackSpeedChanging,
       useRootNavigator: useRootNavigator ?? this.useRootNavigator,
       playbackSpeeds: playbackSpeeds ?? this.playbackSpeeds,
-      systemOverlaysOnEnterFullScreen: systemOverlaysOnEnterFullScreen ??
-          this.systemOverlaysOnEnterFullScreen,
-      deviceOrientationsOnEnterFullScreen: deviceOrientationsOnEnterFullScreen ??
-              this.deviceOrientationsOnEnterFullScreen,
-      systemOverlaysAfterFullScreen:
-          systemOverlaysAfterFullScreen ?? this.systemOverlaysAfterFullScreen,
-      deviceOrientationsAfterFullScreen: deviceOrientationsAfterFullScreen ??
-          this.deviceOrientationsAfterFullScreen,
+      systemOverlaysOnEnterFullScreen: systemOverlaysOnEnterFullScreen ?? this.systemOverlaysOnEnterFullScreen,
+      deviceOrientationsOnEnterFullScreen:
+          deviceOrientationsOnEnterFullScreen ?? this.deviceOrientationsOnEnterFullScreen,
+      systemOverlaysAfterFullScreen: systemOverlaysAfterFullScreen ?? this.systemOverlaysAfterFullScreen,
+      deviceOrientationsAfterFullScreen: deviceOrientationsAfterFullScreen ?? this.deviceOrientationsAfterFullScreen,
       routePageBuilder: routePageBuilder ?? this.routePageBuilder,
       hideControlsTimer: hideControlsTimer ?? this.hideControlsTimer,
-      progressIndicatorDelay:
-          progressIndicatorDelay ?? this.progressIndicatorDelay,
+      progressIndicatorDelay: progressIndicatorDelay ?? this.progressIndicatorDelay,
     );
   }
 
-  static const defaultHideControlsTimer = Duration(seconds: 3);
+  static const defaultHideControlsTimer = Duration(seconds: 1);
 
   /// If false, the options button in MaterialUI and MaterialDesktopUI
   /// won't be shown.
@@ -485,8 +476,7 @@ class FlexiController extends ChangeNotifier {
 
   /// When the video playback runs into an error, you can build a custom
   /// error message.
-  final Widget Function(BuildContext context, String errorMessage)?
-      errorBuilder;
+  final Widget Function(BuildContext context, String errorMessage)? errorBuilder;
 
   /// The Aspect Ratio of the Video. Important to get the correct size of the
   /// video!
@@ -555,8 +545,7 @@ class FlexiController extends ChangeNotifier {
   final Duration? progressIndicatorDelay;
 
   static FlexiController of(BuildContext context) {
-    final flexiControllerProvider =
-        context.dependOnInheritedWidgetOfExactType<FlexiControllerProvider>()!;
+    final flexiControllerProvider = context.dependOnInheritedWidgetOfExactType<FlexiControllerProvider>()!;
 
     return flexiControllerProvider.controller;
   }
@@ -570,11 +559,9 @@ class FlexiController extends ChangeNotifier {
   bool get isPlaying => videoPlayerController.value.isPlaying;
 
   Future _initialize() async {
-
     await videoPlayerController.setLooping(looping);
 
-    if ((autoInitialize || autoPlay) &&
-        !videoPlayerController.value.isInitialized) {
+    if ((autoInitialize || autoPlay) && !videoPlayerController.value.isInitialized) {
       await videoPlayerController.initialize();
     }
 
@@ -657,6 +644,5 @@ class FlexiControllerProvider extends InheritedWidget {
   final FlexiController controller;
 
   @override
-  bool updateShouldNotify(FlexiControllerProvider oldWidget) =>
-      controller != oldWidget.controller;
+  bool updateShouldNotify(FlexiControllerProvider oldWidget) => controller != oldWidget.controller;
 }
