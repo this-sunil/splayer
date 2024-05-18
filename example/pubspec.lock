@@ -371,7 +371,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.22"
+    version: "1.0.23"
   stack_trace:
     dependency: transitive
     description:

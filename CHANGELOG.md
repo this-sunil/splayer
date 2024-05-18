@@ -50,5 +50,5 @@
 ## 1.0.21
 * Fix Bugs
 
-## 1.0.23
+## 1.0.24
  * update dependencies
