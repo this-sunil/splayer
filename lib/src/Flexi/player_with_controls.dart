@@ -1,11 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:splayer/src/Flexi/flexi_player.dart';
 import 'package:splayer/src/Flexi/helpers/adaptive_controls.dart';
 import 'package:splayer/src/Flexi/notifiers/index.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-
 
 double calculateAspectRatio(BuildContext context) {
   final size = MediaQuery.of(context).size;
@@ -20,45 +19,42 @@ class PlayerWithControls extends StatelessWidget {
   const PlayerWithControls({super.key, required this.tag});
   @override
   Widget build(BuildContext context) {
-
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    double scale=1.0;
-    double prevScale=1.0;
+    double scale = 1.0;
+    double prevScale = 1.0;
     final FlexiController flexiController = FlexiController.of(context);
 
     Widget buildControls(
-        BuildContext context,
-        FlexiController flexiController,
-
-        ) {
+      BuildContext context,
+      FlexiController flexiController,
+    ) {
       return flexiController.showControls
-          ? flexiController.customControls ??   AdaptiveControls(tag:tag)
+          ? flexiController.customControls ?? AdaptiveControls(tag: tag)
           : const SizedBox();
     }
 
     Widget buildPlayerWithControls(
-        FlexiController flexiController,
-        BuildContext context,
-        ) {
-      final aspectRatio=MediaQuery.sizeOf(context).aspectRatio;
-      bool isLandscape=aspectRatio>1;
+      FlexiController flexiController,
+      BuildContext context,
+    ) {
+      final aspectRatio = MediaQuery.sizeOf(context).aspectRatio;
+      bool isLandscape = aspectRatio > 1;
       print("Landscape$isLandscape");
 
       return GestureDetector(
-          onScaleStart: (details){
-            prevScale=scale;
+          onScaleStart: (details) {
+            prevScale = scale;
             //print("Scale Start");
           },
-          onScaleUpdate: (details){
-            scale=prevScale*details.scale;
+          onScaleUpdate: (details) {
+            scale = prevScale * details.scale;
             //print("Scale Update $scale");
-              scale=scale.clamp(1.0, 10.0);
+            scale = scale.clamp(1.0, 2.0);
 
-              flexiController.transformationController!.value=Matrix4.diagonal3Values(scale, scale, scale);
-              },
-          child:Stack(
+            flexiController.transformationController!.value = Matrix4.diagonal3Values(scale, scale, scale);
+          },
+          child: Stack(
             children: <Widget>[
-
               InteractiveViewer(
                 transformationController: flexiController.transformationController,
                 alignment: Alignment.center,
@@ -69,59 +65,54 @@ class PlayerWithControls extends StatelessWidget {
                 scaleEnabled: flexiController.zoomAndPan,
                 clipBehavior: Clip.antiAlias,
                 child: Center(
-                  child: !isLandscape?VideoPlayer(flexiController.videoPlayerController):AspectRatio(
-                    aspectRatio: flexiController.videoPlayerController.value.aspectRatio,
-                    child: VideoPlayer(flexiController.videoPlayerController),
-                  ),
+                  child: !isLandscape
+                      ? VideoPlayer(flexiController.videoPlayerController)
+                      : AspectRatio(
+                          aspectRatio: flexiController.videoPlayerController.value.aspectRatio,
+                          child: VideoPlayer(flexiController.videoPlayerController),
+                        ),
                 ),
               ),
-
-
               if (flexiController.overlay != null) flexiController.overlay!,
               if (Theme.of(context).platform != TargetPlatform.iOS)
                 Consumer<PlayerNotifier>(
                   builder: (
-                      BuildContext context,
-                      PlayerNotifier notifier,
-                      Widget? widget,
-                      ) =>
+                    BuildContext context,
+                    PlayerNotifier notifier,
+                    Widget? widget,
+                  ) =>
                       Visibility(
-                        visible: !notifier.hideStuff,
-                        child: AnimatedOpacity(
-                          opacity: notifier.hideStuff ? 0.0 : 0.8,
-                          duration: const Duration(
-                            milliseconds: 250,
-                          ),
-                          child: const DecoratedBox(
-                            decoration: BoxDecoration(color: Colors.black54),
-                            child: SizedBox.expand(),
-                          ),
-                        ),
+                    visible: !notifier.hideStuff,
+                    child: AnimatedOpacity(
+                      opacity: notifier.hideStuff ? 0.0 : 0.8,
+                      duration: const Duration(
+                        milliseconds: 250,
                       ),
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(color: Colors.black54),
+                        child: SizedBox.expand(),
+                      ),
+                    ),
+                  ),
                 ),
-
-                buildControls(context, flexiController)
-
-
+              buildControls(context, flexiController)
             ],
           ));
     }
 
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              color: Colors.black,
-              height: constraints.maxHeight,
-              width: constraints.maxWidth,
-              child: AspectRatio(
-                aspectRatio: calculateAspectRatio(context),
-                child: buildPlayerWithControls(flexiController, context),
-              ),
-            ),
-          );
-        });
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+      return Center(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          color: Colors.black,
+          height: constraints.maxHeight,
+          width: constraints.maxWidth,
+          child: AspectRatio(
+            aspectRatio: calculateAspectRatio(context),
+            child: buildPlayerWithControls(flexiController, context),
+          ),
+        ),
+      );
+    });
   }
 }
-

@@ -52,3 +52,6 @@
 
 ## 1.0.24
  * update dependencies
+
+## 1.0.25
+* update dependencies video player
