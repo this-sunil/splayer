@@ -76,4 +76,7 @@ Fix Bugs
 ## 1.0.33
 * Update dependencies
 
+## 1.0.34
+*Update dependencies
+
 
