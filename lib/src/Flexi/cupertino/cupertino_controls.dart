@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 
+
 import 'package:get/get.dart';
 import 'package:smooth_video_progress/smooth_video_progress.dart';
 
@@ -23,12 +24,15 @@ import 'package:video_player/video_player.dart';
 import 'package:volume_controller/volume_controller.dart';
 import '../../controllers/pod_getx_video_controller.dart';
 
+
 class CupertinoControls extends StatefulWidget {
   const CupertinoControls({
     required this.backgroundColor,
     required this.iconColor,
     required this.playColor,
     required this.tag,
+    required this.podGetXVideoController,
+    required this.tap,
     this.showPlayButton = true,
     super.key,
   });
@@ -37,7 +41,10 @@ class CupertinoControls extends StatefulWidget {
   final Color iconColor;
   final Color playColor;
   final bool showPlayButton;
+  final bool tap;
   final String tag;
+  final PodGetXVideoController podGetXVideoController;
+
 
   @override
   State<StatefulWidget> createState() {
@@ -72,9 +79,13 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
   double volumeListenerValue = 0;
   double getVolume = 0;
   double _setVolumeValue = 0;
+  late final AnimationController _animationController;
+  late final Animation<double> opacityCtr;
 
   bool isPhone = true;
   double varDeviceWidth = 0.0;
+  bool isBackward=false;
+  bool isForward=false;
 
   VideoPlayerValue? get latestValue => _latestValue;
 
@@ -249,22 +260,31 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
   @override
   void initState() {
     super.initState();
-
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    opacityCtr = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
     notifier = Provider.of<PlayerNotifier>(context, listen: false);
 
     //set volumn value
     // Listen to system volume change
-    VolumeController().listener((volume) {
+    VolumeController.instance.addListener((volume) {
       setState(() => volumeListenerValue = volume);
     });
 
-    VolumeController().getVolume().then((volume) => _setVolumeValue = volume);
-    VolumeController().showSystemUI = false;
+    VolumeController.instance.getVolume().then((volume) => _setVolumeValue = volume);
+    VolumeController.instance.showSystemUI = false;
   }
 
   Future<void> setBrightness(double brightness) async {
     try {
-      await ScreenBrightness().setScreenBrightness(brightness);
+      await ScreenBrightness().setApplicationScreenBrightness(brightness);
     } catch (e) {
       debugPrint(e.toString());
       throw 'Failed to set brightness';
@@ -526,7 +546,8 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
   @override
   void dispose() {
     _dispose();
-    VolumeController().removeListener();
+    VolumeController.instance.removeListener();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -1008,7 +1029,7 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                           child: RotatedBox(
                             quarterTurns: 3,
                             child: FutureBuilder<double>(
-                              future: ScreenBrightness().current,
+                              future: ScreenBrightness().application,
                               builder: (context, snapshot) {
                                 double currentBrightness = 0;
                                 if (snapshot.hasData) {
@@ -1016,7 +1037,7 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                                 }
 
                                 return StreamBuilder<double>(
-                                  stream: ScreenBrightness().onCurrentBrightnessChanged,
+                                  stream: ScreenBrightness().onApplicationScreenBrightnessChanged,
                                   builder: (context, snapshot) {
                                     double changedBrightness = currentBrightness;
                                     if (snapshot.hasData) {
@@ -1087,8 +1108,19 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                     )),
                 /* : const SizedBox(),*/
 
-                _buildSkipBack(
-                    widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
+                 Expanded(child:  _buildSkipBack(
+                     widget.iconColor, (MediaQuery.of(context).orientation,) == Orientation.portrait ? 30.0 : 47.0,widget.tap)),
+
+               /* Expanded(
+                  child: DoubleTapIcon(
+                    tag: widget.tag,
+                    isForward: false,
+                    height: double.maxFinite,
+
+                    onDoubleTap:  widget.podGetXVideoController.onLeftDoubleTap,
+                  ),
+                ),*/
+
                 CenterPlayButton(
                   backgroundColor: const Color(0xFFFF0000),
                   iconColor: widget.iconColor,
@@ -1098,8 +1130,22 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                   onPressed: playPause,
                   isPhone: isPhone,
                 ),
-                _buildSkipForward(
-                    widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0),
+                /*Expanded(
+                  child: DoubleTapIcon(
+                    tag: widget.tag,
+
+                    width: 50,
+
+                    isForward: true,
+
+                    height: double.maxFinite,
+                    onDoubleTap:  widget.podGetXVideoController.onRightDoubleTap,
+                  ),
+                ),*/
+
+
+                Expanded(child: _buildSkipForward(
+                    widget.iconColor, (MediaQuery.of(context).orientation) == Orientation.portrait ? 30.0 : 47.0,widget.tap)),
 
                 //device volumn
                 /* _flexiController!.isVolumnOptionDisplay && _flexiController!.isFullScreen  ?*/
@@ -1132,7 +1178,7 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                                 onChanged: (double value) {
                                   setState(() {
                                     _setVolumeValue = value;
-                                    VolumeController().setVolume(_setVolumeValue);
+                                    VolumeController.instance.setVolume(_setVolumeValue);
                                   });
                                 },
                                 value: _setVolumeValue,
@@ -1284,44 +1330,94 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
     });
   }
 
-  GestureDetector _buildSkipBack(Color iconColor, double barHeight) {
-    return GestureDetector(
-      onDoubleTap: _skipBack,
-      child: Container(
-        height: barHeight + (!isPhone ? 10 : 0),
-        color: Colors.transparent,
-        margin: const EdgeInsets.only(left: 10.0),
-        padding: const EdgeInsets.only(
-          left: 6.0,
-          right: 6.0,
-        ),
-        child: Icon(
-          CupertinoIcons.gobackward_10,
-          color: iconColor,
-          size: 22.0 + (!isPhone ? 5 : 0),
-        ),
-      ),
-    );
+   _buildSkipBack(Color iconColor, double barHeight,bool tap) {
+     return GestureDetector(
+       onTap: ()=>_skipBack(),
+       child: AnimatedBuilder(
+         animation: _animationController,
+         builder: (context,child){
+
+           return Container(
+             height: barHeight + (!isPhone ? 10 : 0),
+             color: Colors.transparent,
+             padding: const EdgeInsets.only(
+               left: 6.0,
+               right: 8.0,
+             ),
+             margin: const EdgeInsets.only(
+               right: 8.0,
+             ),
+             child: Wrap(
+               alignment:WrapAlignment.center,
+               runAlignment: WrapAlignment.center,
+               crossAxisAlignment: WrapCrossAlignment.center,
+               direction: Axis.horizontal,
+               children: [
+
+                 Icon(
+                   Icons.keyboard_double_arrow_left,
+                   color: iconColor,
+                   size:30,
+                 ),
+                 Visibility(
+                     visible: isBackward && skipBackwardDuration!=0,
+                     child: AnimatedOpacity(
+                       duration: const Duration(milliseconds: 200),
+                       opacity: opacityCtr.value,
+                       child:  Text("$skipForwardDuration",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                     )),
+
+
+               ],
+             ),
+           );
+         },
+       ),
+     );
   }
 
-  GestureDetector _buildSkipForward(Color iconColor, double barHeight) {
+   _buildSkipForward(Color iconColor, double barHeight,bool tap) {
     return GestureDetector(
-      onDoubleTap: _skipForward,
-      child: Container(
-        height: barHeight + (!isPhone ? 10 : 0),
-        color: Colors.transparent,
-        padding: const EdgeInsets.only(
-          left: 6.0,
-          right: 8.0,
-        ),
-        margin: const EdgeInsets.only(
-          right: 8.0,
-        ),
-        child: Icon(
-          CupertinoIcons.goforward_10,
-          color: iconColor,
-          size: 22.0 + (!isPhone ? 20 : 0),
-        ),
+      onTap: ()=>_skipForward(),
+
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context,child){
+
+          return Container(
+            height: barHeight + (!isPhone ? 10 : 0),
+            color: Colors.transparent,
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 8.0,
+            ),
+            margin: const EdgeInsets.only(
+              right: 8.0,
+            ),
+            child: Wrap(
+              alignment:WrapAlignment.center,
+              runAlignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              direction: Axis.horizontal,
+              children: [
+                Visibility(
+                    visible: isForward && skipForwardDuration!=0,
+                    child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: opacityCtr.value,
+                  child:  Text("$skipForwardDuration",style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold)),
+                )),
+                Icon(
+                  Icons.keyboard_double_arrow_right,
+                  color: iconColor,
+                  size:30,
+                ),
+
+
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -1571,19 +1667,58 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
       }
     });
   }
-
+  int skipForwardDuration=10;
+  int skipBackwardDuration=10;
   void _skipBack() {
+
+    setState(() {
+     /* if(skipBackwardDuration<=30){
+        skipBackwardDuration+=10;
+      }
+      else{
+        skipBackwardDuration=0;
+      }*/
+      isBackward=true;
+      isForward=false;
+    });
+
     _cancelAndRestartTimer();
-    final beginning = Duration.zero.inMilliseconds;
-    final skip = (_latestValue.position - const Duration(seconds: 10)).inMilliseconds;
-    controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
+      final beginning = Duration.zero.inMilliseconds;
+      final skip = (_latestValue.position -  Duration(seconds: skipBackwardDuration)).inMilliseconds;
+      controller.seekTo(Duration(milliseconds: math.max(skip, beginning)));
+      _animationController.forward().then((_) {
+    });
+      Future.delayed(const Duration(seconds: 4),(){
+      _animationController.reverse();
+    });
+
+    print("Left");
+
   }
 
   void _skipForward() {
+    setState(() {
+     /* if(skipForwardDuration==10){
+        skipForwardDuration+=10;
+      }
+      else{
+        skipForwardDuration=10;
+      }*/
+      isBackward=false;
+      isForward=true;
+    });
+    _animationController.forward().then((_) {
+
+    });
     _cancelAndRestartTimer();
-    final end = _latestValue.duration.inMilliseconds;
-    final skip = (_latestValue.position + const Duration(seconds: 10)).inMilliseconds;
-    controller.seekTo(Duration(milliseconds: math.min(skip, end)));
+      final end = _latestValue.duration.inMilliseconds;
+      final skip = (_latestValue.position +  Duration(seconds: skipForwardDuration)).inMilliseconds;
+      controller.seekTo(Duration(milliseconds: math.min(skip, end)));
+    Future.delayed(const Duration(seconds: 4),(){
+      _animationController.reverse();
+    });
+
+
   }
 
   void _startHideTimer() {
@@ -1677,10 +1812,10 @@ class VideoPlaybackSelectorMob extends StatelessWidget {
   final void Function()? onTap;
   final String tag;
   const VideoPlaybackSelectorMob({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.tag,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

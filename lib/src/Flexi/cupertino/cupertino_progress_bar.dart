@@ -11,9 +11,8 @@ class CupertinoVideoProgressBar extends StatelessWidget {
     this.onDragEnd,
     this.onDragStart,
     this.onDragUpdate,
-    Key? key,
-  })  : colors = colors ?? FlexiProgressColors(),
-        super(key: key);
+    super.key,
+  })  : colors = colors ?? FlexiProgressColors();
 
   final VideoPlayerController controller;
   final FlexiProgressColors colors;

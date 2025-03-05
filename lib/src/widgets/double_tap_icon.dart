@@ -79,7 +79,7 @@ class _DoubleTapIconState extends State<DoubleTapIcon>
     if (widget.iconOnly) return iconWithText();
     return DoubleTapRippleEffect(
       onDoubleTap: _onDoubleTap,
-      rippleColor: Colors.white,
+      rippleColor: Colors.grey.shade200,
       wrapper: (parentWidget, curveRadius) {
         final forwardRadius =
             !widget.isForward ? Radius.zero : Radius.circular(curveRadius);
@@ -108,8 +108,8 @@ class _DoubleTapIconState extends State<DoubleTapIcon>
         builder: (context, child) {
           const icon = Icon(
             Icons.keyboard_arrow_right,
-            size: 20,
-            color: Colors.white,
+            size: 30,
+            color: Colors.black,
           );
           return Center(
             child: Column(

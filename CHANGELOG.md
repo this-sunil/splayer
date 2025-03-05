@@ -55,3 +55,25 @@
 
 ## 1.0.25
 * update dependencies video player
+ 
+
+## 1.0.26
+* Single Tap Back & forward / double 
+## 1.0.28
+Fix Bugs
+## 1.0.29
+* Fix Bug
+## 1.0.30
+* Update dependencies
+
+## 1.0.31
+* don't use old version
+* Update dependencies
+
+## 1.0.32
+* Fixing issues
+
+## 1.0.33
+* Update dependencies
+
+

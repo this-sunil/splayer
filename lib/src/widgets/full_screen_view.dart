@@ -6,6 +6,7 @@ class FullScreenView extends StatefulWidget {
   const FullScreenView({
     required this.tag,
 
+
     super.key,
   });
 
@@ -65,6 +66,7 @@ class _FullScreenViewState extends State<FullScreenView>
               child: loadingWidget)
               : podCtr.videoCtr!.value.isInitialized
               ?  _PodCoreVideoPlayer(
+            tap: podCtr.podPlayerConfig.tap,
 
             tag: widget.tag,
             videoPlayerCtr: podCtr.videoCtr!,

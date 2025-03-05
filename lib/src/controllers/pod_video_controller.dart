@@ -228,6 +228,7 @@ class _PodVideoController extends _PodUiController {
           fullscreenDialog: true,
           opaque: false,
           pageBuilder: (BuildContext context, _, __) => FullScreenView(
+
             tag: tag,
           ),
           reverseTransitionDuration: const Duration(milliseconds: 400),

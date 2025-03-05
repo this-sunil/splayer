@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:splayer/src/controllers/pod_getx_video_controller.dart';
 
 import '../cupertino/cupertino_controls.dart';
 
 class AdaptiveControls extends StatelessWidget {
   final String tag;
+  final bool tap;
+  final PodGetXVideoController podCtr;
   const AdaptiveControls({
-    Key? key, required this.tag,
 
-  }) : super(key: key);
+    super.key,
+    required this.tag,
+    required this.tap,
+    required this.podCtr,
+
+  });
 
   @override
   Widget build(BuildContext context) {
 
     return CupertinoControls(
+      podGetXVideoController: podCtr,
+      tap: tap,
 
       playColor: Colors.red,
-        backgroundColor:Color.fromRGBO(41, 41, 41, 0.5),
+        backgroundColor:const Color.fromRGBO(41, 41, 41, 0.5),
         iconColor: Colors.white, tag: tag,//fromARGB(255, 200, 200, 200),
       );
     // switch (Theme.of(context).platform) {

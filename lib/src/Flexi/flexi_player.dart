@@ -11,6 +11,7 @@ import 'package:splayer/src/Flexi/models/options_translation.dart';
 import 'package:splayer/src/Flexi/models/subtitle_model.dart';
 import 'package:splayer/src/Flexi/notifiers/player_notifier.dart';
 import 'package:splayer/src/Flexi/player_with_controls.dart';
+import 'package:splayer/src/controllers/pod_getx_video_controller.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -27,14 +28,16 @@ typedef FlexiRoutePageBuilder = Widget Function(
 /// make it easy to use!
 class Flexi extends StatefulWidget {
   const Flexi({
-    Key? key,
+    super.key,
     required this.controller,
     required this.tag,
-  }) : super(key: key);
+    required this.podCtr,
+  });
 
   /// The [FlexiController]
   final FlexiController controller;
   final String tag;
+  final PodGetXVideoController podCtr;
   @override
   FlexiState createState() {
     return FlexiState();
@@ -92,7 +95,7 @@ class FlexiState extends State<Flexi> {
       controller: widget.controller,
       child: ChangeNotifierProvider<PlayerNotifier>.value(
         value: notifier,
-        builder: (context, w) => PlayerWithControls(tag: widget.tag),
+        builder: (context, w) => PlayerWithControls(tag: widget.tag,podCtr: widget.podCtr),
       ),
     );
   }
@@ -129,6 +132,7 @@ class FlexiState extends State<Flexi> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
+
   ) {
     final controllerProvider = FlexiControllerProvider(
       controller: widget.controller,
@@ -136,7 +140,9 @@ class FlexiState extends State<Flexi> {
         opacity: animation,
         child: ChangeNotifierProvider<PlayerNotifier>.value(
           value: notifier,
-          builder: (context, w) => PlayerWithControls(tag: widget.tag),
+          builder: (context, w) => PlayerWithControls(
+              podCtr: widget.podCtr,
+              tag: widget.tag),
         ),
       ),
     );
@@ -270,6 +276,8 @@ class FlexiState extends State<Flexi> {
 /// `VideoPlayerController`.
 class FlexiController extends ChangeNotifier {
   FlexiController({
+    required this.podCtr,
+    required this.tap,
     this.isBrignessOptionDisplay = true,
     this.isVolumnOptionDisplay = true,
     required this.videoPlayerController,
@@ -365,6 +373,8 @@ class FlexiController extends ChangeNotifier {
     )? routePageBuilder,
   }) {
     return FlexiController(
+      tap: tap,
+      podCtr: podCtr,
       isBrignessOptionDisplay: isBrignessOptionDisplay ?? this.isBrignessOptionDisplay,
       isVolumnOptionDisplay: isVolumnOptionDisplay ?? this.isVolumnOptionDisplay,
       videoPlayerController: videoPlayerController ?? this.videoPlayerController,
@@ -406,11 +416,13 @@ class FlexiController extends ChangeNotifier {
     );
   }
 
-  static const defaultHideControlsTimer = Duration(seconds: 1);
+  static const defaultHideControlsTimer = Duration(seconds: 5);
 
   /// If false, the options button in MaterialUI and MaterialDesktopUI
   /// won't be shown.
   final bool showOptions;
+
+  final PodGetXVideoController podCtr;
 
   /// Pass your translations for the options like:
   /// - PlaybackSpeed
@@ -433,6 +445,8 @@ class FlexiController extends ChangeNotifier {
 
   /// Add your own additional options on top of flexi options
   final Widget? additionalOptions;
+
+  final bool tap;
 
   /// Define here your own Widget on how your n'th subtitle will look like
   Widget Function(BuildContext context, dynamic subtitle)? subtitleBuilder;
@@ -636,10 +650,10 @@ class FlexiController extends ChangeNotifier {
 
 class FlexiControllerProvider extends InheritedWidget {
   const FlexiControllerProvider({
-    Key? key,
+    super.key,
     required this.controller,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final FlexiController controller;
 

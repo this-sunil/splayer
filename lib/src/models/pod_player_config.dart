@@ -4,6 +4,7 @@ class PodPlayerConfig {
   final bool forcedVideoFocus;
   final bool wakelockEnabled;
   final bool isLive;
+  final bool tap;
 
   /// Initial video quality priority. The first available option will be used,
   /// from start to the end of this list. If all options informed are not
@@ -13,6 +14,7 @@ class PodPlayerConfig {
   final List<int> videoQualityPriority;
 
   const PodPlayerConfig({
+    this.tap=true,
     this.autoPlay = true,
     this.isLooping = false,
     this.forcedVideoFocus = false,

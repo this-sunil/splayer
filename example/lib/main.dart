@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:splayer/splayer.dart';
 
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -58,16 +60,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late PodPlayerController controller;
-
+  /*fetchData() async{
+    final yt=YoutubeExplode();
+    final manifest = await yt.videos.streamsClient.getManifest("IMLLUfpUb3s",ytClients:
+    [Platform.isAndroid?YoutubeApiClient.androidVr:YoutubeApiClient.ios]);
+    var streamInfo = manifest.streams;
+      print("Manifest ${manifest.muxed.map((e)=>e.qualityLabel.split("p")[0].toString()).toList()} ${streamInfo[0].url} ${streamInfo[0].qualityLabel.split("p")[0]}");
+  }*/
   @override
   void initState() {
     controller = PodPlayerController(
         podPlayerConfig: const PodPlayerConfig(
           isLive: false,
+          autoPlay: false,
+          videoQualityPriority: [1080,720,480,360,240],
+          tap: true,
         ),
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=h1-9JLXV_L8", live: false))
+
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=LKNHVDPKy7g", live: false))
       ..initialise();
-    controller.play();
+    controller.pause();
+    //fetchData();
     super.initState();
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
 import 'package:splayer/src/Flexi/cupertino/cupertino_controls.dart';
 import 'package:universal_html/html.dart' as uni_html;
 
@@ -243,6 +244,7 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
         builder: (podCtr) {
           if (podCtr.isFullScreen) return _thumbnailAndLoadingWidget();
           return _PodCoreVideoPlayer(
+            tap:  podCtr.podPlayerConfig.tap,
             videoPlayerCtr: podCtr.videoCtr!,
             videoAspectRatio: videoAspectRatio,
             tag: widget.controller.getTag,
@@ -251,6 +253,8 @@ class _PodVideoPlayerState extends State<PodVideoPlayer> with TickerProviderStat
       );
     } else {
       return _PodCoreVideoPlayer(
+        tap:  _podCtr.podPlayerConfig.tap,
+
         videoPlayerCtr: _podCtr.videoCtr!,
         videoAspectRatio: videoAspectRatio,
         tag: widget.controller.getTag,

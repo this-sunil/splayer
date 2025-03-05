@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -12,6 +12,7 @@ String podErrorString(String val) {
 }
 
 class VideoApis {
+  // Helper method to make the request with or without a hash for Vimeo videos
   static Future<Response> _makeRequestHash(String videoId, String? hash) {
     if (hash == null) {
       return http.get(
@@ -24,6 +25,7 @@ class VideoApis {
     }
   }
 
+  // Get Vimeo video quality URLs (public videos)
   static Future<List<VideoQalityUrls>?> getVimeoVideoQualityUrls(
       String videoId,
       String? hash,
@@ -41,22 +43,25 @@ class VideoApis {
       final List<VideoQalityUrls> vimeoQualityUrls = [];
 
       for (final item in rawStreamUrls) {
-        final sepList = cdnVideoUrl.split('/sep/video/');
-        final firstUrlPiece = sepList.firstOrNull ?? '';
-        final lastUrlPiece =
-            ((sepList.lastOrNull ?? '').split('/').lastOrNull) ??
-                (sepList.lastOrNull ?? '');
-        final String urlId =
-            ((item['id'] ?? '') as String).split('-').firstOrNull ?? '';
-        vimeoQualityUrls.add(
-          VideoQalityUrls(
-            quality: int.parse(
-              (item['quality'] as String?)?.split('p').first ?? '0',
-            ),
-            url: '$firstUrlPiece/sep/video/$urlId/$lastUrlPiece',
-          ),
-        );
+        final qualityString = (item['quality'] as String?)?.split('p').first;
+        if (qualityString != null && qualityString.isNotEmpty) {
+          final quality = int.tryParse(qualityString) ?? 0;
+          if (quality > 0) {
+            final sepList = cdnVideoUrl.split('/sep/video/');
+            final firstUrlPiece = sepList.firstOrNull ?? '';
+            final lastUrlPiece = (sepList.lastOrNull ?? '').split('/').lastOrNull ?? '';
+            final String urlId = ((item['id'] ?? '') as String).split('-').firstOrNull ?? '';
+            vimeoQualityUrls.add(
+              VideoQalityUrls(
+                quality: quality,
+                url: '$firstUrlPiece/sep/video/$urlId/$lastUrlPiece',
+              ),
+            );
+          }
+        }
       }
+
+      // If no quality URLs are found, fallback to a default 720p URL
       if (vimeoQualityUrls.isEmpty) {
         vimeoQualityUrls.add(
           VideoQalityUrls(
@@ -71,7 +76,7 @@ class VideoApis {
       if (error.toString().contains('XMLHttpRequest')) {
         log(
           podErrorString(
-            '(INFO) To play vimeo video in WEB, Please enable CORS in your browser',
+            '(INFO) To play Vimeo video in WEB, please enable CORS in your browser',
           ),
         );
       }
@@ -80,6 +85,7 @@ class VideoApis {
     }
   }
 
+  // Get Vimeo video quality URLs (private videos)
   static Future<List<VideoQalityUrls>?> getVimeoPrivateVideoQualityUrls(
       String videoId,
       Map<String, String> httpHeader,
@@ -89,15 +95,13 @@ class VideoApis {
         Uri.parse('https://api.vimeo.com/videos/$videoId'),
         headers: httpHeader,
       );
-      final jsonData =
-          (jsonDecode(response.body)['files'] as List<dynamic>?) ?? [];
+      final jsonData = (jsonDecode(response.body)['files'] as List<dynamic>?) ?? [];
 
       final List<VideoQalityUrls> list = [];
       for (int i = 0; i < jsonData.length; i++) {
-        final String quality =
-            (jsonData[i]['rendition'] as String?)?.split('p').first ?? '0';
+        final String quality = (jsonData[i]['rendition'] as String?)?.split('p').first ?? '0';
         final int? number = int.tryParse(quality);
-        if (number != null && number != 0) {
+        if (number != null && number > 0) {
           list.add(
             VideoQalityUrls(
               quality: number,
@@ -106,12 +110,13 @@ class VideoApis {
           );
         }
       }
+
       return list;
     } catch (error) {
       if (error.toString().contains('XMLHttpRequest')) {
         log(
           podErrorString(
-            '(INFO) To play vimeo video in WEB, Please enable CORS in your browser',
+            '(INFO) To play Vimeo video in WEB, please enable CORS in your browser',
           ),
         );
       }
@@ -120,6 +125,7 @@ class VideoApis {
     }
   }
 
+  // Get YouTube video quality URLs
   static Future<List<VideoQalityUrls>?> getYoutubeVideoQualityUrls(
       String youtubeIdOrUrl,
       bool live,
@@ -127,36 +133,42 @@ class VideoApis {
     try {
       final yt = YoutubeExplode();
       final urls = <VideoQalityUrls>[];
+
       if (live) {
+        // Fetch live stream URL
         final url = await yt.videos.streamsClient.getHttpLiveStreamUrl(
           VideoId(youtubeIdOrUrl),
         );
         urls.add(
           VideoQalityUrls(
-            quality: 360,
+            quality: 360, // Default quality for live streams
             url: url,
           ),
         );
       } else {
-        final manifest =
-        await yt.videos.streamsClient.getManifest(youtubeIdOrUrl);
+        // Fetch non-live video streams
+        final manifest = await yt.videos.streamsClient.getManifest(youtubeIdOrUrl,ytClients:
+        [Platform.isAndroid?YoutubeApiClient.android:YoutubeApiClient.ios]);
+
         urls.addAll(
           manifest.muxed.map(
                 (element) => VideoQalityUrls(
-              quality: int.parse(element.qualityLabel.split('p')[0]),
+              quality: int.tryParse(element.qualityLabel.split("p")[0]) ?? 0,
               url: element.url.toString(),
             ),
           ),
         );
       }
-      // Close the YoutubeExplode's http client.
+
+      // Close the YoutubeExplode client
       yt.close();
+
       return urls;
     } catch (error) {
       if (error.toString().contains('XMLHttpRequest')) {
         log(
           podErrorString(
-            '(INFO) To play youtube video in WEB, Please enable CORS in your browser',
+            '(INFO) To play YouTube video in WEB, please enable CORS in your browser',
           ),
         );
       }
