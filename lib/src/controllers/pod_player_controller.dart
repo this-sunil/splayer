@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as uni_html;
-
-
-
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../splayer.dart';
 import '../utils/logger.dart';
@@ -38,8 +36,6 @@ class PodPlayerController {
         playVideoFrom: playVideoFrom,
         playerConfig: podPlayerConfig,
       );
-    print("Initialize Pod Setting");
-    print("Live Config=>${_ctr.podPlayerConfig.isLive}");
   }
 
   /// Initializes the video player.
@@ -140,14 +136,14 @@ class PodPlayerController {
   /// It only adds a listener if the player is successfully initialized
   void addListener(VoidCallback listener) {
     _checkAndWaitTillInitialized().then(
-      (value) => _ctr.videoCtr?.addListener(listener),
+          (value) => _ctr.videoCtr?.addListener(listener),
     );
   }
 
   /// Remove registered listeners
   void removeListener(VoidCallback listener) {
     _checkAndWaitTillInitialized().then(
-      (value) => _ctr.videoCtr?.removeListener(listener),
+          (value) => _ctr.videoCtr?.removeListener(listener),
     );
   }
 
@@ -170,7 +166,7 @@ class PodPlayerController {
     _ctr.videoCtr?.removeListener(_ctr.videoListner);
     _ctr.videoCtr?.dispose();
     _ctr.removeListenerId('podVideoState', _ctr.podStateListner);
-
+    if (podPlayerConfig.wakelockEnabled) WakelockPlus.disable();
     Get.delete<PodGetXVideoController>(
       force: true,
       tag: getTag,
@@ -212,7 +208,7 @@ class PodPlayerController {
     if (!_isCtrInitialised) return;
     return _ctr.seekBackward(duration);
   }
-  
+
   ///on right double tap
   Future<void> doubleTapVideoForward(int seconds) async {
     await _checkAndWaitTillInitialized();
@@ -252,19 +248,18 @@ class PodPlayerController {
   void onVideoQualityChanged(VoidCallback callback) {
     _ctr.onVimeoVideoQualityChanged = callback;
   }
- 
 
   static Future<List<VideoQalityUrls>?> getYoutubeUrls(
-    String youtubeIdOrUrl, {
-    bool live = false,
-  }) {
+      String youtubeIdOrUrl, {
+        bool live = false,
+      }) {
     return VideoApis.getYoutubeVideoQualityUrls(youtubeIdOrUrl, live);
   }
 
   static Future<List<VideoQalityUrls>?> getVimeoUrls(
-    String videoId, {
-    String? hash,
-  }) {
+      String videoId, {
+        String? hash,
+      }) {
     return VideoApis.getVimeoVideoQualityUrls(videoId, hash);
   }
 

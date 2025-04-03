@@ -52,7 +52,7 @@ class CupertinoControls extends StatefulWidget {
   }
 }
 
-class _CupertinoControlsState extends State<CupertinoControls> with SingleTickerProviderStateMixin {
+class _CupertinoControlsState extends State<CupertinoControls> with TickerProviderStateMixin {
   late PlayerNotifier notifier;
   late VideoPlayerValue _latestValue;
   double? _latestVolume;
@@ -373,12 +373,7 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                     visible: isLocked,
                     child: Expanded(
                         child: Center(
-                      child: _displayBufferingIndicator
-                          ? const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            )
-                          : _buildHitArea(barHeight),
+                          child: _buildHitArea(barHeight),
                     ))),
                /* if (_subtitleOn)
                   Transform.translate(

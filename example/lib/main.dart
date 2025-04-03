@@ -71,13 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     controller = PodPlayerController(
         podPlayerConfig: const PodPlayerConfig(
-          isLive: false,
+          isLive: true,
           autoPlay: false,
           videoQualityPriority: [1080,720,480,360,240],
           tap: true,
         ),
-
-        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=LKNHVDPKy7g", live: false))
+        playVideoFrom: PlayVideoFrom.youtube("https://www.youtube.com/watch?v=mDNzj0njUZU"))
       ..initialise();
     controller.pause();
     //fetchData();

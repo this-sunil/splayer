@@ -79,4 +79,17 @@ Fix Bugs
 ## 1.0.34
 *Update dependencies
 
+## 1.0.35
+* Update Changes buffering issue fix
+
+
+## 1.0.36
+* Video player dependency update 
+
+## 1.0.39
+* Fix Bugs
+
+## 1.0.40
+* Fix Bugs
+
 

@@ -39,7 +39,7 @@ class _PodCoreVideoPlayerState extends State<_PodCoreVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     final podCtr = Get.find<PodGetXVideoController>(tag: tag);
-    print("PodController =>${podCtr.videoCtr!.value.isPlaying} & Live => $tag");
+    print("PodController =>${podCtr.videoCtr?.value.isPlaying} & Live => $tag");
     return Builder(
       builder: (ctrx) {
         return KeyboardListener(
